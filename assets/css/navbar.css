@@ -1,0 +1,148 @@
+/* includes/navbar.css */
+
+/* Style personnalisé pour la barre de navigation */
+.navbar-custom {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+}
+
+.navbar-custom .navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+}
+
+.navbar-custom .navbar-brand img {
+    transition: transform 0.3s ease;
+}
+
+.navbar-custom .navbar-brand:hover img {
+    transform: scale(1.1);
+}
+
+.navbar-custom .nav-link {
+    font-weight: 500;
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-custom .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.navbar-custom .nav-link:hover::after,
+.navbar-custom .nav-link.active::after {
+    width: 70%;
+}
+
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link.active {
+    color: var(--primary-color) !important;
+}
+
+.navbar-custom .btn-outline-light {
+    border-width: 2px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.navbar-custom .btn-outline-light:hover {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.navbar-custom .btn-warning {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.navbar-custom .btn-warning:hover {
+    background-color: #e55a2b;
+    border-color: #e55a2b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(229, 90, 43, 0.3);
+}
+
+.navbar-custom .dropdown-menu {
+    border: none;
+    box-shadow: 0 5px 15px rgba(232, 226, 226, 0.96);
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+
+.navbar-custom .dropdown-item {
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.navbar-custom .dropdown-item:hover {
+    background-color: rgba(255, 107, 53, 0.1);
+}
+
+.navbar-custom .dropdown-item.text-danger:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.navbar-custom .badge {
+    font-size: 0.6rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Animation pour le menu déroulant en mobile */
+@media (max-width: 991.98px) {
+    .navbar-custom .navbar-collapse {
+        background-color: var(--bs-primary);
+        padding: 1rem;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .navbar-custom .nav-link::after {
+        display: none;
+    }
+    
+    .navbar-custom .btn-outline-light {
+        margin: 0.5rem 0;
+        text-align: center;
+        display: block;
+    }
+    
+    .navbar-custom .ms-3 {
+        margin-left: 0 !important;
+        margin-top: 1rem;
+        text-align: center;
+    }
+}
+
+/* Pour le thème sombre */
+[data-bs-theme="dark"] .navbar-custom {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    background-color: #1a1d20 !important;
+}
+
+[data-bs-theme="dark"] .navbar-custom .dropdown-menu {
+    background-color: #2c3034;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+[data-bs-theme="dark"] .navbar-custom .dropdown-item {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .navbar-custom .dropdown-item:hover {
+    background-color: rgba(255, 107, 53, 0.2);
+}

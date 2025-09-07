@@ -1,0 +1,350 @@
+/* Variables CSS */
+:root {
+    --primary-color: #ff6b6b;
+    --secondary-color: #4ecdc4;
+    --dark-color: #a2b5cb;
+    --light-color: #f7fff7;
+    --gray-color: #6c757d;
+}
+
+/* Base Styles - Utilisées sur toutes les pages */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    color: var(--dark-color);
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Styles généraux pour les cartes de restaurant - Utilisés sur plusieurs pages */
+.restaurants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.resto-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s;
+    animation: fadeIn 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.resto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.resto-info {
+    padding: 1.5rem;
+}
+
+.resto-info h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.resto-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+/* Styles généraux pour les boutons - Utilisés sur plusieurs pages */
+.btn {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #2a2929;
+}
+
+.btn-primary {
+    background: #f5f2f2;
+    color: rgb(7, 7, 7);
+    padding: 8px 15px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Footer - Utilisé sur toutes les pages */
+.site-footer {
+    background-color: #333;
+    color: white;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+.site-footer .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-nav a {
+    color: #f0e0e0;
+    margin-left: 1.5rem;
+    text-decoration: none;
+}
+
+.footer-nav a:hover {
+    color: white;
+}
+
+/* Navigation - Utilisé sur toutes les pages */
+.dropdown-menu {
+    transition: all 0.3s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: white;
+}
+
+.badge {
+    font-size: 0.6rem;
+    padding: 0.25em 0.4em;
+}
+
+/* Hero Section - Utilisé sur la page d'accueil */
+.hero-section {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+}
+
+/* Placeholders génériques - Utilisés sur plusieurs pages */
+.no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: #e9ecef;
+    color: #6c757d;
+    text-align: center;
+    font-size: 3rem;
+}
+
+.default-placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+.logo-nav {
+    object-fit: contain;
+    padding: 20px;
+    max-height: 80%;
+    max-width: 80%;
+}
+
+/* Style de base pour les éléments communs */
+.text-gold {
+    color: #e2e0da;
+}
+
+.btn-outline-gold {
+    color: #d5d2c7;
+    border-color: #D4AF37;
+}
+
+.btn-outline-gold:hover {
+    background-color: #eaeae9;
+    color: #1A1A1A;
+}
+
+.bg-dark {
+    background-color: #1A1A1A !important;
+}
+
+/* Animation */
+.animate__animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.animate__fadeInUp {
+    animation-name: fadeInUp;
+}
+/* Animation pour le chargement */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.resto-card {
+    animation: fadeIn 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+/* Délai d'animation pour chaque carte */
+.restaurants-container .col-md-6:nth-child(1) .resto-card { animation-delay: 0.1s; }
+.restaurants-container .col-md-6:nth-child(2) .resto-card { animation-delay: 0.2s; }
+.restaurants-container .col-md-6:nth-child(3) .resto-card { animation-delay: 0.3s; }
+/* ... etc ... */
+
+/* Style pour la dark mode */
+[data-bs-theme="dark"] .resto-card {
+    background-color: #2c2c2c;
+    border-color: #444;
+}
+
+[data-bs-theme="dark"] .resto-title,
+[data-bs-theme="dark"] .resto-info {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .resto-description {
+    color: #adb5bd;
+}
+/* Responsive - Appliqué à toutes les pages */
+@media (max-width: 992px) {
+    .navbar-collapse {
+        padding: 1rem 0;
+    }
+    
+    .ms-3 {
+        margin-left: 0 !important;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .restaurants-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-section {
+        height: 60vh;
+        min-height: 400px;
+        background-attachment: scroll;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-image {
+        height: 300px;
+    }
+}
+:root {
+    --primary-color: #ff6b35;
+    /* ... autres variables ... */
+}
+/* Styles pour le footer */
+.text-gold {
+    color: #D4AF37 !important;
+}
+
+.btn-gold {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: white;
+}
+
+.btn-gold:hover {
+    background-color: #B8860B;
+    border-color: #B8860B;
+    color: white;
+}
+
+.bg-dark {
+    background-color: #1a1a1a !important;
+}
+
+.social-icons a {
+    transition: transform 0.3s;
+}
+
+.social-icons a:hover {
+    transform: translateY(-3px);
+    color: #D4AF37 !important;
+}
+
+.list-unstyled a {
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+.list-unstyled a:hover {
+    color: #D4AF37 !important;
+}

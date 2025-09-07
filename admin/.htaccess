@@ -1,0 +1,34 @@
+# Interdire l'accès direct aux fichiers sensibles
+<Files ~ "^\.">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "check_auth.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Protection contre l'exploration de répertoire
+Options -Indexes
+
+# Empêcher l'exécution de certains types de fichiers
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "^(index\.php|logout\.php)$">
+    Allow from all
+</FilesMatch>
+
+# Protection XSS
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>

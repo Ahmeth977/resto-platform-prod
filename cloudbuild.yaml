@@ -1,5 +1,5 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/sencommandes/resto-platform', '.']
+  args: ['build', '-t', 'gcr.io/sencommandes/mon-app', '-f', 'Dockerfile', '.']
 images:
-- 'gcr.io/sencommandes/resto-platform'
+- 'gcr.io/sencommandes/mon-app'

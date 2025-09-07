@@ -1,0 +1,42 @@
+/* admin.css - Styles pour l'interface d'administration */
+
+/* Navigation */
+.navbar-admin {
+    background-color: #343a40;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Contenu principal */
+.admin-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Cartes de dashboard */
+.admin-card {
+    transition: transform 0.3s;
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+/* Tableaux */
+.admin-table {
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+}
+
+/* Formulaire */
+.admin-form {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+}
