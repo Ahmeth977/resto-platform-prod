@@ -2,30 +2,37 @@
 // test_db.php - Version corrigée
 header('Content-Type: text/plain');
 
-// UTILISEZ LE SOCKET CLOUD SQL au lieu de l'IP
+// CHEMIN EXACT du socket Cloud SQL
 $socket = '/cloudsql/sencommandes:europe-west1:resto-platform-db';
 $dbname = 'resto_platform';
 $user = 'root';
-$pass = 'VOTRE_MOT_DE_PASSE';
+$pass = ''; // Remplacez par le vrai mot de passe
 
-echo "Tentative de connexion via socket Cloud SQL\n";
+echo "Tentative de connexion via: $socket\n";
 
 try {
-    // Connexion via socket Unix (méthode Cloud SQL)
+    // Connexion via socket Unix
     $dsn = "mysql:unix_socket=$socket;dbname=$dbname;charset=utf8mb4";
-    $options = [
+    
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_EMULATE_PREPARES => false
-    ];
+        PDO::ATTR_EMULATE_PREPARES => false,
+        PDO::ATTR_PERSISTENT => false
+    ]);
     
-    $pdo = new PDO($dsn, $user, $pass, $options);
-    echo "✅ CONNEXION RÉUSSIE via socket Cloud SQL!\n";
+    echo "✅ CONNEXION RÉUSSIE!\n";
     
+    // Test query
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM restaurants");
     $result = $stmt->fetch();
     echo "Nombre de restaurants: " . $result['count'] . "\n";
     
 } catch (PDOException $e) {
     echo "❌ ERREUR: " . $e->getMessage() . "\n";
+    echo "Code: " . $e->getCode() . "\n";
+    
+    // Debug info
+    echo "Socket path: $socket\n";
+    echo "DB name: $dbname\n";
 }
 ?>
