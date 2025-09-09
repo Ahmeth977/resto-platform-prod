@@ -8,12 +8,12 @@ class Database {
     public $conn;
 
     public function __construct() {
-        // Utilisez le socket Unix pour Google Cloud SQL
-        $this->host = getenv('DB_HOST') ?: '/cloudsql/commandes:europe-west1:resto-db';
+        // CORRECTION: Utilisez le bon nom d'instance
+        $this->host = getenv('DB_HOST') ?: '/cloudsql/sencommandes:europe-west1:resto-platform-db'; // ← CORRIGÉ
         $this->db_name = getenv('DB_NAME') ?: 'resto_platform';
         $this->username = getenv('DB_USER') ?: 'root';
-        $this->password = getenv('DB_PASS') ?: ''; // ← IMPORTANT!
-        $this->port = null; // Null pour socket Unix
+        $this->password = getenv('DB_PASS') ?: '781155609'; // ← MOT DE PASSE AJOUTÉ
+        $this->port = null;
     }
 
     public function getConnection() {
@@ -21,10 +21,8 @@ class Database {
         
         try {
             if (strpos($this->host, '/cloudsql/') === 0) {
-                // Connexion socket Unix (Google Cloud)
                 $dsn = "mysql:unix_socket={$this->host};dbname={$this->db_name}";
             } else {
-                // Connexion TCP/IP standard
                 $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->db_name}";
             }
             
