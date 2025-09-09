@@ -5,7 +5,7 @@ env_variables:
   DB_HOST: "34.52.242.229"
   DB_NAME: "resto_platform"
   DB_USER: "root"
-  DB_PASS: "781155609"
+  DB_PASS: ""
 
 # Autorisez les connexions sortantes
 network:
