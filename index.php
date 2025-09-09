@@ -16,7 +16,7 @@ try {
    require_once __DIR__ . '/config/database.php';
 $database = new Database();
 $conn = $database->getConnection();
-    $stmt = $db->prepare("
+   $stmt = $conn->prepare("
         SELECT 
             r.id, r.name, r.description, r.address, r.phone, 
             r.image_url, '' as logo_url, '' as chef_name, 0 as michelin_stars,
@@ -32,8 +32,7 @@ $conn = $database->getConnection();
     ");
     $stmt->execute();
     $restaurants = $stmt->fetchAll();
-    
-    $cuisines = $db->query("SELECT DISTINCT category FROM menus WHERE category IS NOT NULL LIMIT 10")->fetchAll();
+    $cuisines = $conn->query("SELECT DISTINCT category FROM menus WHERE category IS NOT NULL LIMIT 10")->fetchAll();
 } catch (PDOException $e) {
     error_log("[" . date('Y-m-d H:i:s') . "] Erreur DB: " . $e->getMessage());
     $restaurants = [];
@@ -49,10 +48,10 @@ try {
     $compactMenus = [];
     
     // Récupérer tous les IDs de restaurants
-    $restaurantIds = $db->query("SELECT id FROM restaurants")->fetchAll(PDO::FETCH_COLUMN);
+    $restaurantIds = $conn->query("SELECT id FROM restaurants")->fetchAll(PDO::FETCH_COLUMN);
     
     foreach ($restaurantIds as $restaurantId) {
-        $stmt = $db->prepare("
+       $stmt = $conn->prepare("
             SELECT m.id, m.name, m.price, m.image_url, r.name as restaurant_name, m.updated_at
             FROM menus m
             JOIN restaurants r ON m.restaurant_id = r.id
