@@ -1,8 +1,14 @@
-runtime: php
-env: flex
-
-runtime_config:
-  document_root: .
+runtime: php82
+service: default
 
 env_variables:
-  PORT: 8080
+  DB_HOST: "34.52.242.229"
+  DB_NAME: "resto_platform"
+  DB_USER: "root"
+  DB_PASS: "781155609"
+
+# Autorisez les connexions sortantes
+network:
+  session_affinity: false
+  instance_tag: []
+  name: default
