@@ -13,7 +13,9 @@ function safeOutput($data, $maxLength = 255) {
 
 // Récupération des restaurants
 try {
-    $db = connectDB();
+   require_once __DIR__ . '/config/database.php';
+$database = new Database();
+$conn = $database->getConnection();
     $stmt = $db->prepare("
         SELECT 
             r.id, r.name, r.description, r.address, r.phone, 
