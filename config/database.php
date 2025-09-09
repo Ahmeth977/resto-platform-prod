@@ -12,7 +12,7 @@ class Database {
         $this->host = getenv('DB_HOST') ?: '/cloudsql/commandes:europe-west1:resto-db';
         $this->db_name = getenv('DB_NAME') ?: 'resto_platform';
         $this->username = getenv('DB_USER') ?: 'root';
-        $this->password = getenv('DB_PASS') ?: ''; // ← IMPORTANT!
+        $this->password = getenv('DB_PASS') ?: '781155609'; // ← IMPORTANT!
         $this->port = null; // Null pour socket Unix
     }
 
