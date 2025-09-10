@@ -1,27 +1,39 @@
 <?php
-require_once __DIR__ . '/config.php';
-// Fonction pour vérifier les autorisations
+// functions.php - Version corrigée pour le déploiement
+
+// Ne plus redéfinir les constantes qui sont déjà dans config.php
+// Utiliser directement les constantes définies dans config.php
+
+/**
+ * Fonction pour vérifier les autorisations - CORRIGÉE
+ */
 function checkAdminAccess() {
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== ROLE_ADMIN) {
-        header("Location: /login.php?error=access_denied");
+        header("Location: " . BASE_URL . "login.php?error=access_denied");
         exit();
     }
 }
 
-// Fonction pour vérifier si l'utilisateur est admin
+/**
+ * Fonction pour vérifier si l'utilisateur est admin
+ */
 function isAdmin() {
     return isset($_SESSION['user_id']) && $_SESSION['user_role'] === ROLE_ADMIN;
 }
-// Fonction pour les produits
+
+/**
+ * Fonction pour les produits - OPTIMISÉE
+ */
 function getProductImage($productId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'products/';
     $baseUrl = IMG_BASE_URL . 'products/';
     
-    // Debug: Afficher les chemins pour vérification
-    error_log("DEBUG PRODUCT: basePath = $basePath");
-    error_log("DEBUG PRODUCT: baseUrl = $baseUrl");
-    error_log("DEBUG PRODUCT: imageUrl = " . ($imageUrl ?: 'null'));
-    error_log("DEBUG PRODUCT: document_root = " . $_SERVER['DOCUMENT_ROOT']);
+    // Debug seulement en mode développement
+    if (defined('DEV_MODE') && DEV_MODE) {
+        error_log("DEBUG PRODUCT: basePath = $basePath");
+        error_log("DEBUG PRODUCT: baseUrl = $baseUrl");
+        error_log("DEBUG PRODUCT: imageUrl = " . ($imageUrl ?: 'null'));
+    }
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
@@ -30,22 +42,10 @@ function getProductImage($productId, $imageUrl = null) {
             return $imageUrl;
         }
         
-        // Vérifier si le fichier existe (plusieurs chemins possibles)
-        $possiblePaths = [
-            $_SERVER['DOCUMENT_ROOT'] . $imageUrl,
-            IMG_BASE_PATH . basename($imageUrl),
-            $imageUrl // Chemin absolu déjà
-        ];
-        
-        foreach ($possiblePaths as $testPath) {
-            error_log("DEBUG PRODUCT: Testing path: $testPath");
-            if (file_exists($testPath) && is_file($testPath)) {
-                // Retourner le chemin relatif pour le web
-                if (strpos($testPath, $_SERVER['DOCUMENT_ROOT']) === 0) {
-                    return str_replace($_SERVER['DOCUMENT_ROOT'], '', $testPath);
-                }
-                return $imageUrl;
-            }
+        // Vérifier si le fichier existe
+        $testPath = IMG_BASE_PATH . $imageUrl;
+        if (file_exists($testPath) && is_file($testPath)) {
+            return IMG_BASE_URL . $imageUrl;
         }
     }
     
@@ -53,7 +53,6 @@ function getProductImage($productId, $imageUrl = null) {
     $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     foreach ($extensions as $ext) {
         $imagePath = $basePath . $productId . '.' . $ext;
-        error_log("DEBUG PRODUCT: Testing ID path: $imagePath");
         if (file_exists($imagePath)) {
             return $baseUrl . $productId . '.' . $ext;
         }
@@ -62,7 +61,6 @@ function getProductImage($productId, $imageUrl = null) {
     // 3. Image par défaut du dossier
     $defaultImage = $baseUrl . 'default.jpg';
     $defaultPath = $basePath . 'default.jpg';
-    error_log("DEBUG PRODUCT: Testing default: $defaultPath");
     
     if (file_exists($defaultPath)) {
         return $defaultImage;
@@ -72,15 +70,18 @@ function getProductImage($productId, $imageUrl = null) {
     return 'https://via.placeholder.com/400x300/4ECDC4/ffffff?text=Produit+Non+Disponible';
 }
 
-// Fonction pour les restaurants
+/**
+ * Fonction pour les restaurants - OPTIMISÉE
+ */
 function getRestaurantImage($restaurantId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'restaurants/';
     $baseUrl = IMG_BASE_URL . 'restaurants/';
     
-    // Debug: Afficher les chemins pour vérification
-    error_log("DEBUG RESTAURANT: basePath = $basePath");
-    error_log("DEBUG RESTAURANT: baseUrl = $baseUrl");
-    error_log("DEBUG RESTAURANT: imageUrl = " . ($imageUrl ?: 'null'));
+    // Debug seulement en mode développement
+    if (defined('DEV_MODE') && DEV_MODE) {
+        error_log("DEBUG RESTAURANT: basePath = $basePath");
+        error_log("DEBUG RESTAURANT: imageUrl = " . ($imageUrl ?: 'null'));
+    }
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
@@ -89,22 +90,10 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
             return $imageUrl;
         }
         
-        // Vérifier si le fichier existe (plusieurs chemins possibles)
-        $possiblePaths = [
-            $_SERVER['DOCUMENT_ROOT'] . $imageUrl,
-            IMG_BASE_PATH . basename($imageUrl),
-            $imageUrl // Chemin absolu déjà
-        ];
-        
-        foreach ($possiblePaths as $testPath) {
-            error_log("DEBUG RESTAURANT: Testing path: $testPath");
-            if (file_exists($testPath) && is_file($testPath)) {
-                // Retourner le chemin relatif pour le web
-                if (strpos($testPath, $_SERVER['DOCUMENT_ROOT']) === 0) {
-                    return str_replace($_SERVER['DOCUMENT_ROOT'], '', $testPath);
-                }
-                return $imageUrl;
-            }
+        // Vérifier si le fichier existe
+        $testPath = IMG_BASE_PATH . $imageUrl;
+        if (file_exists($testPath) && is_file($testPath)) {
+            return IMG_BASE_URL . $imageUrl;
         }
     }
     
@@ -112,7 +101,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     foreach ($extensions as $ext) {
         $imagePath = $basePath . $restaurantId . '.' . $ext;
-        error_log("DEBUG RESTAURANT: Testing ID path: $imagePath");
         if (file_exists($imagePath)) {
             return $baseUrl . $restaurantId . '.' . $ext;
         }
@@ -121,7 +109,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     // 3. Image par défaut du dossier
     $defaultImage = $baseUrl . 'default.jpg';
     $defaultPath = $basePath . 'default.jpg';
-    error_log("DEBUG RESTAURANT: Testing default: $defaultPath");
     
     if (file_exists($defaultPath)) {
         return $defaultImage;
@@ -131,17 +118,23 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     return 'https://via.placeholder.com/600x400/FF6B6B/ffffff?text=Restaurant+Non+Disponible';
 }
 
-// Fonction pour uploader les images des produits
+/**
+ * Fonction pour uploader les images des produits
+ */
 function handleProductImageUpload($fileInputName, $currentImage = null) {
     return handleImageUpload($fileInputName, 'products', $currentImage);
 }
 
-// Fonction pour uploader les images des restaurants
+/**
+ * Fonction pour uploader les images des restaurants
+ */
 function handleRestaurantImageUpload($fileInputName, $currentImage = null) {
     return handleImageUpload($fileInputName, 'restaurants', $currentImage);
 }
 
-// Fonction générique pour uploader les images
+/**
+ * Fonction générique pour uploader les images - CORRIGÉE
+ */
 function handleImageUpload($fileInputName, $type = 'products', $currentImage = null) {
     $basePath = IMG_BASE_PATH . $type . '/';
     
@@ -152,18 +145,26 @@ function handleImageUpload($fileInputName, $type = 'products', $currentImage = n
 
     // Supprimer l'ancienne image si elle existe
     if ($currentImage && !empty($currentImage)) {
-        $pathsToCheck = [
-            $_SERVER['DOCUMENT_ROOT'] . $currentImage,
-            IMG_BASE_PATH . basename($currentImage),
-            $currentImage
-        ];
+        // Nettoyer le chemin de l'image
+        $imagePath = str_replace(IMG_BASE_URL, '', $currentImage);
+        $fullPath = IMG_BASE_PATH . $imagePath;
         
-        foreach ($pathsToCheck as $pathToDelete) {
-            if (file_exists($pathToDelete) && is_file($pathToDelete)) {
-                unlink($pathToDelete);
-                break;
-            }
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            unlink($fullPath);
         }
+    }
+    
+    // Vérifier si un fichier a été uploadé
+    if (!isset($_FILES[$fileInputName]) || $_FILES[$fileInputName]['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    
+    // Vérifier le type de fichier
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $fileType = $_FILES[$fileInputName]['type'];
+    
+    if (!in_array($fileType, $allowedTypes)) {
+        return null;
     }
     
     // Générer un nom de fichier unique
@@ -178,8 +179,14 @@ function handleImageUpload($fileInputName, $type = 'products', $currentImage = n
     return null;
 }
 
-// Fonction de debug pour vérifier les chemins
+/**
+ * Fonction de debug pour vérifier les chemins - OPTIMISÉE
+ */
 function debugImagePaths() {
+    if (!defined('DEV_MODE') || !DEV_MODE) {
+        return; // Seulement en mode développement
+    }
+    
     echo "<h3>Debug des chemins d'images</h3>";
     echo "IMG_BASE_PATH: " . IMG_BASE_PATH . "<br>";
     echo "IMG_BASE_URL: " . IMG_BASE_URL . "<br>";
@@ -200,6 +207,10 @@ function debugImagePaths() {
         }
     }
 }
+
+/**
+ * Fonction pour obtenir l'URL d'image d'un menu avec cache-buster - CORRIGÉE
+ */
 function getMenuImageUrl($imageUrl, $updatedAt = null) {
     if (empty($imageUrl)) {
         return BASE_URL . 'assets/img/placeholder-food.jpg?v=' . time();
@@ -214,7 +225,7 @@ function getMenuImageUrl($imageUrl, $updatedAt = null) {
     $timestamp = $updatedAt ? strtotime($updatedAt) : time();
     return $imageUrl . (strpos($imageUrl, '?') === false ? '?' : '&') . 'v=' . $timestamp;
 }
-// Fonction pour afficher les articles du panier
-  
 
+// Note: La fonction pour afficher les articles du panier n'est pas définie dans le code fourni
+// Vous devrez l'implémenter séparément
 ?>
