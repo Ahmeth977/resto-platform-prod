@@ -1,29 +1,41 @@
 <?php
-// config.php
+// config.php - Configuration optimisée pour Google App Engine
 
 // 1. Constantes des rôles utilisateurs
 define('ROLE_ADMIN', 'admin');
 define('ROLE_RESTAURATEUR', 'restaurateur');
 define('ROLE_CLIENT', 'client');
 
-// 2. Configuration BDD pour Google Cloud SQL
-$dbHost = '34.52.242.229'; // Adresse IP de votre instance Cloud SQL
-$dbName = 'resto_platform'; // Nom de votre base de données
-$dbUser = 'root'; // Utilisateur de la base de données
-$dbPass = '781155609'; // Mot de passe de la base de données
-$dbPort = 3306; // Port MySQL standard
+// 2. Configuration BDD pour Google Cloud SQL - Utilisation des variables d'environnement
+$dbHost = getenv('DB_HOST') ?: '34.52.242.229';
+$dbName = getenv('DB_NAME') ?: 'resto_platform';
+$dbUser = getenv('DB_USER') ?: 'root';
+$dbPass = getenv('DB_PASS') ?: '781155609';
+$dbPort = getenv('DB_PORT') ?: 3306;
 
-// 3. Chemins système - Configuration manuelle pour Google Cloud
+// 3. Chemins système - Configuration optimisée pour Google App Engine
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
 
-// Configuration spécifique pour votre déploiement Google Cloud
-define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
+// Détection automatique de l'environnement
+$isAppEngine = (getenv('GAE_APPLICATION') !== false);
+$isLocal = ($host === 'localhost' || $host === '127.0.0.1' || strpos($host, '.test') !== false);
+
+if ($isAppEngine) {
+    // Environnement Google App Engine en production
+    define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
+} elseif ($isLocal) {
+    // Environnement de développement local
+    define('BASE_URL', $protocol . '://' . $host . '/');
+} else {
+    // Autres environnements (fallback)
+    define('BASE_URL', $protocol . '://' . $host . '/');
+}
 
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
 
-// 4. Configuration des chemins d'images
+// 4. Configuration des chemins d'images - Optimisée pour App Engine
 define('IMG_BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . '/assets/img/');
 define('IMG_BASE_URL', BASE_URL . 'assets/img/');
 
@@ -31,15 +43,17 @@ define('IMG_BASE_URL', BASE_URL . 'assets/img/');
 date_default_timezone_set('Africa/Dakar');
 
 // 6. Mode Développement - détection automatique
-define('DEV_MODE', ($host === 'localhost' || $host === '127.0.0.1' || strpos($host, '.test') !== false));
+define('DEV_MODE', $isLocal);
 
 // 7. Démarrer la session avec configuration sécurisée
 if (session_status() === PHP_SESSION_NONE) {
+    $domain = $isAppEngine ? 'sencommandes.ew.r.appspot.com' : $host;
+    
     session_set_cookie_params([
         'lifetime' => 86400, // 24 heures
         'path' => '/',
-        'domain' => parse_url(BASE_URL, PHP_URL_HOST),
-        'secure' => true, // Toujours secure en production
+        'domain' => $domain,
+        'secure' => true,
         'httponly' => true,
         'samesite' => 'Strict'
     ]);
@@ -51,32 +65,35 @@ if (session_status() === PHP_SESSION_NONE) {
 /* *************************** */
 
 /**
- * Connexion sécurisée à la base de données avec la même logique que Database.php
+ * Connexion sécurisée à la base de données
  */
 function connectDB() {
     global $dbHost, $dbName, $dbUser, $dbPass, $dbPort;
     
     try {
-        // Connexion TCP/IP forcée - IMPORTANT: pas de socket Unix!
-        $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+        // Détection de l'environnement
+        $isAppEngine = (getenv('GAE_APPLICATION') !== false);
+        
+        if ($isAppEngine) {
+            // Connexion via socket Unix (recommandé pour Google App Engine)
+            $dsn = "mysql:unix_socket=/cloudsql/sencommandes:europe-west1:resto-platform-db;dbname={$dbName};charset=utf8mb4";
+        } else {
+            // Connexion TCP/IP pour le développement local
+            $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+        }
         
         $conn = new PDO($dsn, $dbUser, $dbPass, [
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_PERSISTENT => false,
-            PDO::MYSQL_ATTR_SSL_CA => '/etc/ssl/certs/ca-certificates.crt',
-            PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false
+            PDO::ATTR_PERSISTENT => false
         ]);
         
         return $conn;
         
     } catch(PDOException $exception) {
-        // Journalisation de l'erreur
         error_log("[" . date('Y-m-d H:i:s') . "] MySQL Connection Error: " . $exception->getMessage());
-        error_log("Trying to connect to: {$dbHost}:{$dbPort}, db: {$dbName}");
         
-        // Message adapté selon l'environnement
         if (DEV_MODE) {
             die("Erreur de connexion à la base de données: " . $exception->getMessage());
         } else {
@@ -86,44 +103,36 @@ function connectDB() {
 }
 
 /**
- * Nettoie les données utilisateur (version sécurisée)
+ * Nettoie les données utilisateur
  */
 function sanitize($data) {
     if (is_array($data)) {
         return array_map('sanitize', $data);
     }
     
-    // Nettoyage de base
     $data = trim($data);
     $data = stripslashes($data);
-    
-    // Protection contre XSS
     return htmlspecialchars($data, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
 /**
- * Redirection sécurisée avec validation de l'URL
+ * Redirection sécurisée
  */
 function redirect($url) {
-    // Nettoyer et valider l'URL
     $url = filter_var($url, FILTER_SANITIZE_URL);
     
-    // S'assurer que l'URL commence par un slash
     if (strpos($url, '/') !== 0) {
         $url = '/' . $url;
     }
     
-    // Éviter les redirections ouvertes
     if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
-        // Autoriser seulement les URLs de notre domaine
         $allowedDomain = parse_url(BASE_URL, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
         
         if ($urlDomain !== $allowedDomain) {
-            $url = BASE_URL; // Rediriger vers la page d'accueil en cas de domaine non autorisé
+            $url = BASE_URL;
         }
     } else {
-        // URL relative - construire l'URL complète
         $url = BASE_URL . ltrim($url, '/');
     }
     
@@ -169,23 +178,19 @@ function getProductImage($productId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'products/';
     $baseUrl = IMG_BASE_URL . 'products/';
     
-    // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
-        // Si c'est déjà une URL complète
         if (strpos($imageUrl, 'http') === 0 || strpos($imageUrl, 'data:image') === 0) {
             return $imageUrl;
         }
         
-        // Vérifier si le fichier existe (plusieurs chemins possibles)
         $possiblePaths = [
             $_SERVER['DOCUMENT_ROOT'] . $imageUrl,
             IMG_BASE_PATH . basename($imageUrl),
-            $imageUrl // Chemin absolu déjà
+            $imageUrl
         ];
         
         foreach ($possiblePaths as $testPath) {
             if (file_exists($testPath) && is_file($testPath)) {
-                // Retourner le chemin relatif pour le web
                 if (strpos($testPath, $_SERVER['DOCUMENT_ROOT']) === 0) {
                     return str_replace($_SERVER['DOCUMENT_ROOT'], '', $testPath);
                 }
@@ -194,7 +199,6 @@ function getProductImage($productId, $imageUrl = null) {
         }
     }
     
-    // 2. Vérifier si l'image existe par ID
     $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     foreach ($extensions as $ext) {
         $imagePath = $basePath . $productId . '.' . $ext;
@@ -203,7 +207,6 @@ function getProductImage($productId, $imageUrl = null) {
         }
     }
     
-    // 3. Image par défaut du dossier
     $defaultImage = $baseUrl . 'default.jpg';
     $defaultPath = $basePath . 'default.jpg';
     
@@ -211,7 +214,6 @@ function getProductImage($productId, $imageUrl = null) {
         return $defaultImage;
     }
     
-    // 4. Fallback vers placeholder
     return 'https://via.placeholder.com/400x300/4ECDC4/ffffff?text=Produit+Non+Disponible';
 }
 
@@ -222,23 +224,19 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'restaurants/';
     $baseUrl = IMG_BASE_URL . 'restaurants/';
     
-    // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
-        // Si c'est déjà une URL complète
         if (strpos($imageUrl, 'http') === 0 || strpos($imageUrl, 'data:image') === 0) {
             return $imageUrl;
         }
         
-        // Vérifier si le fichier existe (plusieurs chemins possibles)
         $possiblePaths = [
             $_SERVER['DOCUMENT_ROOT'] . $imageUrl,
             IMG_BASE_PATH . basename($imageUrl),
-            $imageUrl // Chemin absolu déjà
+            $imageUrl
         ];
         
         foreach ($possiblePaths as $testPath) {
             if (file_exists($testPath) && is_file($testPath)) {
-                // Retourner le chemin relatif pour le web
                 if (strpos($testPath, $_SERVER['DOCUMENT_ROOT']) === 0) {
                     return str_replace($_SERVER['DOCUMENT_ROOT'], '', $testPath);
                 }
@@ -247,7 +245,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
         }
     }
     
-    // 2. Vérifier si l'image existe par ID
     $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     foreach ($extensions as $ext) {
         $imagePath = $basePath . $restaurantId . '.' . $ext;
@@ -256,7 +253,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
         }
     }
     
-    // 3. Image par défaut du dossier
     $defaultImage = $baseUrl . 'default.jpg';
     $defaultPath = $basePath . 'default.jpg';
     
@@ -264,7 +260,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
         return $defaultImage;
     }
     
-    // 4. Fallback vers placeholder
     return 'https://via.placeholder.com/600x400/FF6B6B/ffffff?text=Restaurant+Non+Disponible';
 }
 
