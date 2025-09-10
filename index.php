@@ -1016,7 +1016,7 @@ try {
             <?php if(!empty($restaurants)): ?>
                 <?php foreach ($restaurants as $resto): ?>
                     <div class="resto-card">
-                        <a href="restaurant.php?id=<?= $resto['id'] ?>" class="resto-card-link">
+                        <a href="<?= BASE_URL ?>restaurant.php?id=<?= $resto['id'] ?>" class="resto-card-link">
                             <div class="resto-media">
                                 <img src="<?= getRestaurantImage($resto['id'], $resto['image_url']) ?>" 
                                      class="resto-img" 
