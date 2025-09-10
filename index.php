@@ -1,7 +1,42 @@
 <?php
 require_once __DIR__.'/includes/config.php';
 require_once __DIR__.'/includes/functions.php';
+$request_uri = $_SERVER['REQUEST_URI'];
+$path = parse_url($request_uri, PHP_URL_PATH);
 
+// Nettoyer le chemin
+$path = str_replace(BASE_URL, '', $path);
+$path = trim($path, '/');
+
+// Router les requêtes
+if ($path === '' || $path === 'index.php') {
+    // Page d'accueil - déjà dans index.php
+    // Continuer le chargement normal de index.php
+} elseif (strpos($path, 'restaurant.php') === 0) {
+    // Page restaurant
+    require_once 'restaurant.php';
+    exit;
+} elseif (strpos($path, 'login.php') === 0) {
+    // Page de connexion
+    require_once 'login.php';
+    exit;
+} elseif (strpos($path, 'admin/') === 0) {
+    // Pages d'administration
+    $admin_page = str_replace('admin/', '', $path);
+    if (file_exists('admin/' . $admin_page)) {
+        require_once 'admin/' . $admin_page;
+        exit;
+    } else {
+        http_response_code(404);
+        echo 'Page admin non trouvée';
+        exit;
+    }
+} else {
+    // Page non trouvée
+    http_response_code(404);
+    echo 'Page non trouvée: ' . htmlspecialchars($path);
+    exit;
+}
 // Fonctions utilitaires
 function safeOutput($data, $maxLength = 255) {
     $data = trim($data);
