@@ -1,18 +1,16 @@
 <?php
 // test_routing.php - Script de diagnostic
-echo "<h1>Test de Routage Google App Engine</h1>";
-echo "<p>Script actuel: " . $_SERVER['PHP_SELF'] . "</p>";
+echo "<h1>Test de Routage</h1>";
 echo "<p>URL demandée: " . $_SERVER['REQUEST_URI'] . "</p>";
-echo "<p>Fichier actuel: " . __FILE__ . "</p>";
+echo "<p>Script exécuté: " . $_SERVER['SCRIPT_FILENAME'] . "</p>";
+echo "<p>Variables SERVER:</p>";
+echo "<pre>";
+print_r($_SERVER);
+echo "</pre>";
 
-// Testons l'accès à différents fichiers
-$files = ['index.php', 'restaurant.php', 'assets/css/style.css'];
-foreach ($files as $file) {
-    $path = __DIR__ . '/' . $file;
-    if (file_exists($path)) {
-        echo "<p style='color:green'>✓ $file existe</p>";
-    } else {
-        echo "<p style='color:red'>✗ $file n'existe pas</p>";
-    }
-}
+// Test des redirections
+echo "<h2>Test des liens:</h2>";
+echo '<a href="test_routing.php?param=1">Lien 1</a><br>';
+echo '<a href="restaurant.php?id=1">Restaurant</a><br>';
+echo '<a href="assets/css/style.css">Fichier CSS</a><br>';
 ?>
