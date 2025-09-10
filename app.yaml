@@ -8,24 +8,37 @@ env_variables:
   DB_PASS: "781155609"
   BASE_URL: "https://sencommandes.ew.r.appspot.com/"
 
-# Configuration des handlers pour le routage
 handlers:
-- url: /(.+\.(gif|png|jpg|jpeg|css|js|ico|webp|svg))$
-  static_files: \1
-  upload: .+\.(gif|png|jpg|jpeg|css|js|ico|webp|svg)$
-  secure: always
+  # Servir les fichiers statiques directement
+  - url: /(.+\.(gif|png|jpg|jpeg|css|js|ico|webp|svg))$
+    static_files: \1
+    upload: .+\.(gif|png|jpg|jpeg|css|js|ico|webp|svg)$
+    secure: always
 
-- url: /restaurant\.php
-  script: restaurant.php
-  secure: always
+  # Route spécifique pour restaurant.php
+  - url: /restaurant\.php
+    script: restaurant.php
+    secure: always
 
-- url: /index\.php
-  script: index.php
-  secure: always
+  # Route spécifique pour index.php
+  - url: /index\.php
+    script: index.php
+    secure: always
 
-- url: /.*
-  script: index.php
-  secure: always
+  # Route pour la racine du site
+  - url: /$
+    script: index.php
+    secure: always
+
+  # Route pour les assets - important pour le CSS, JS, images
+  - url: /assets
+    static_dir: assets
+    secure: always
+
+  # Route par défaut - doit être la dernière
+  - url: /.*
+    script: index.php
+    secure: always
 
 # Configuration des ressources
 resources:
