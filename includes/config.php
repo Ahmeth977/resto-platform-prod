@@ -6,28 +6,19 @@ define('ROLE_ADMIN', 'admin');
 define('ROLE_RESTAURATEUR', 'restaurateur');
 define('ROLE_CLIENT', 'client');
 
-// 2. Configuration BDD pour Google Cloud SQL - Même configuration que database.php
-$dbHost = getenv('DB_HOST') ?: '34.52.242.229';
-$dbName = getenv('DB_NAME') ?: 'resto_platform';
-$dbUser = getenv('DB_USER') ?: 'root';
-$dbPass = getenv('DB_PASS') ?: '781155609';
+// 2. Configuration BDD pour Google Cloud SQL
+$dbHost = '34.52.242.229'; // Adresse IP de votre instance Cloud SQL
+$dbName = 'resto_platform'; // Nom de votre base de données
+$dbUser = 'root'; // Utilisateur de la base de données
+$dbPass = '781155609'; // Mot de passe de la base de données
 $dbPort = 3306; // Port MySQL standard
 
-// 3. Chemins système - Détection automatique pour différents environnements
+// 3. Chemins système - Configuration manuelle pour Google Cloud
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
-$scriptPath = dirname($_SERVER['SCRIPT_NAME']);
 
-// Déterminer BASE_URL automatiquement
-if ($host === 'localhost' || $host === '127.0.0.1') {
-    // Environnement de développement local
-    define('BASE_URL', $protocol . '://' . $host . $scriptPath . '/');
-} else {
-    // Environnement de production (Google Cloud)
-    // Supprime le sous-dossier "resto_plateform" pour la production
-    $basePath = str_replace('/resto_plateform', '', $scriptPath);
-    define('BASE_URL', $protocol . '://' . $host . $basePath . '/');
-}
+// Configuration spécifique pour votre déploiement Google Cloud
+define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
 
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
@@ -47,8 +38,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 86400, // 24 heures
         'path' => '/',
-        'domain' => $host,
-        'secure' => ($protocol === 'https'),
+        'domain' => parse_url(BASE_URL, PHP_URL_HOST),
+        'secure' => true, // Toujours secure en production
         'httponly' => true,
         'samesite' => 'Strict'
     ]);
@@ -67,13 +58,15 @@ function connectDB() {
     
     try {
         // Connexion TCP/IP forcée - IMPORTANT: pas de socket Unix!
-        $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8";
+        $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
         
         $conn = new PDO($dsn, $dbUser, $dbPass, [
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_PERSISTENT => false
+            PDO::ATTR_PERSISTENT => false,
+            PDO::MYSQL_ATTR_SSL_CA => '/etc/ssl/certs/ca-certificates.crt',
+            PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false
         ]);
         
         return $conn;
@@ -127,7 +120,7 @@ function redirect($url) {
         $urlDomain = parse_url($url, PHP_URL_HOST);
         
         if ($urlDomain !== $allowedDomain) {
-            $url = '/'; // Rediriger vers la page d'accueil en cas de domaine non autorisé
+            $url = BASE_URL; // Rediriger vers la page d'accueil en cas de domaine non autorisé
         }
     } else {
         // URL relative - construire l'URL complète
@@ -176,14 +169,6 @@ function getProductImage($productId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'products/';
     $baseUrl = IMG_BASE_URL . 'products/';
     
-    // Debug: Afficher les chemins pour vérification
-    if (DEV_MODE) {
-        error_log("DEBUG PRODUCT: basePath = $basePath");
-        error_log("DEBUG PRODUCT: baseUrl = $baseUrl");
-        error_log("DEBUG PRODUCT: imageUrl = " . ($imageUrl ?: 'null'));
-        error_log("DEBUG PRODUCT: document_root = " . $_SERVER['DOCUMENT_ROOT']);
-    }
-    
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
         // Si c'est déjà une URL complète
@@ -199,9 +184,6 @@ function getProductImage($productId, $imageUrl = null) {
         ];
         
         foreach ($possiblePaths as $testPath) {
-            if (DEV_MODE) {
-                error_log("DEBUG PRODUCT: Testing path: $testPath");
-            }
             if (file_exists($testPath) && is_file($testPath)) {
                 // Retourner le chemin relatif pour le web
                 if (strpos($testPath, $_SERVER['DOCUMENT_ROOT']) === 0) {
@@ -216,9 +198,6 @@ function getProductImage($productId, $imageUrl = null) {
     $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     foreach ($extensions as $ext) {
         $imagePath = $basePath . $productId . '.' . $ext;
-        if (DEV_MODE) {
-            error_log("DEBUG PRODUCT: Testing ID path: $imagePath");
-        }
         if (file_exists($imagePath)) {
             return $baseUrl . $productId . '.' . $ext;
         }
@@ -227,9 +206,6 @@ function getProductImage($productId, $imageUrl = null) {
     // 3. Image par défaut du dossier
     $defaultImage = $baseUrl . 'default.jpg';
     $defaultPath = $basePath . 'default.jpg';
-    if (DEV_MODE) {
-        error_log("DEBUG PRODUCT: Testing default: $defaultPath");
-    }
     
     if (file_exists($defaultPath)) {
         return $defaultImage;
@@ -246,13 +222,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'restaurants/';
     $baseUrl = IMG_BASE_URL . 'restaurants/';
     
-    // Debug: Afficher les chemins pour vérification
-    if (DEV_MODE) {
-        error_log("DEBUG RESTAURANT: basePath = $basePath");
-        error_log("DEBUG RESTAURANT: baseUrl = $baseUrl");
-        error_log("DEBUG RESTAURANT: imageUrl = " . ($imageUrl ?: 'null'));
-    }
-    
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
         // Si c'est déjà une URL complète
@@ -268,9 +237,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
         ];
         
         foreach ($possiblePaths as $testPath) {
-            if (DEV_MODE) {
-                error_log("DEBUG RESTAURANT: Testing path: $testPath");
-            }
             if (file_exists($testPath) && is_file($testPath)) {
                 // Retourner le chemin relatif pour le web
                 if (strpos($testPath, $_SERVER['DOCUMENT_ROOT']) === 0) {
@@ -285,9 +251,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     foreach ($extensions as $ext) {
         $imagePath = $basePath . $restaurantId . '.' . $ext;
-        if (DEV_MODE) {
-            error_log("DEBUG RESTAURANT: Testing ID path: $imagePath");
-        }
         if (file_exists($imagePath)) {
             return $baseUrl . $restaurantId . '.' . $ext;
         }
@@ -296,9 +259,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     // 3. Image par défaut du dossier
     $defaultImage = $baseUrl . 'default.jpg';
     $defaultPath = $basePath . 'default.jpg';
-    if (DEV_MODE) {
-        error_log("DEBUG RESTAURANT: Testing default: $defaultPath");
-    }
     
     if (file_exists($defaultPath)) {
         return $defaultImage;
@@ -364,31 +324,6 @@ function handleImageUpload($fileInputName, $type = 'products', $currentImage = n
     }
     
     return null;
-}
-
-/**
- * Fonction de debug pour vérifier les chemins
- */
-function debugImagePaths() {
-    echo "<h3>Debug des chemins d'images</h3>";
-    echo "IMG_BASE_PATH: " . IMG_BASE_PATH . "<br>";
-    echo "IMG_BASE_URL: " . IMG_BASE_URL . "<br>";
-    echo "DOCUMENT_ROOT: " . $_SERVER['DOCUMENT_ROOT'] . "<br>";
-    
-    // Vérifier l'existence des dossiers
-    $types = ['products', 'restaurants'];
-    foreach ($types as $type) {
-        $path = IMG_BASE_PATH . $type . '/';
-        echo "Dossier $type: " . (is_dir($path) ? "EXISTE" : "MANQUANT") . " ($path)<br>";
-        
-        // Lister les fichiers dans le dossier
-        if (is_dir($path)) {
-            $files = scandir($path);
-            echo "Fichiers dans $type: " . implode(', ', array_filter($files, function($file) {
-                return $file !== '.' && $file !== '..';
-            })) . "<br>";
-        }
-    }
 }
 
 /**
