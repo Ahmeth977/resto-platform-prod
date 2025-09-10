@@ -143,7 +143,7 @@ try {
     /* Hero Section */
     .hero-section {
         background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-            url('assets/img/acceuil.png') no-repeat center center;
+            url('<?= BASE_URL ?>assets/img/acceuil.png') no-repeat center center;
         background-size: cover;
         height: 60vh;
         min-height: 400px;
