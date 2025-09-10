@@ -9,8 +9,12 @@ env_variables:
   BASE_URL: "https://sencommandes.ew.r.appspot.com/"
 
 handlers:
+# Servir les fichiers statiques directement
+- url: /assets
+  static_dir: assets
+
 - url: /.*
-  script: app.php
+  script: auto
   secure: always
 
 # Configuration des ressources
