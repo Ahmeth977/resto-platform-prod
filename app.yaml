@@ -5,7 +5,8 @@ env_variables:
   DB_HOST: "34.52.242.229"
   DB_NAME: "resto_platform"
   DB_USER: "root"
-  DB_PASS: "781155609"  # Ajoutez votre mot de passe ici
+  DB_PASS: "781155609"
+  BASE_URL: "https://sencommandes.ew.r.appspot.com/"
 
 # Configuration des handlers pour le routage
 handlers:
@@ -14,8 +15,16 @@ handlers:
   upload: .+\.(gif|png|jpg|jpeg|css|js|ico|webp|svg)$
   secure: always
 
+- url: /restaurant\.php
+  script: restaurant.php
+  secure: always
+
+- url: /index\.php
+  script: index.php
+  secure: always
+
 - url: /.*
-  script: auto
+  script: index.php
   secure: always
 
 # Configuration des ressources
