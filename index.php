@@ -1,40 +1,26 @@
 <?php
 require_once __DIR__.'/includes/config.php';
 require_once __DIR__.'/includes/functions.php';
+// Récupérer l'URL demandée
 $request_uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($request_uri, PHP_URL_PATH);
 
-// Nettoyer le chemin
-$path = str_replace(BASE_URL, '', $path);
-$path = trim($path, '/');
-
 // Router les requêtes
-if ($path === '' || $path === 'index.php') {
-    // Page d'accueil - déjà dans index.php
-    // Continuer le chargement normal de index.php
-} elseif (strpos($path, 'restaurant.php') === 0) {
+if ($path === '/' || $path === '/index.php') {
+    // Page d'accueil
+    require 'home.php';
+} elseif (strpos($path, '/restaurant.php') === 0) {
     // Page restaurant
-    require_once 'restaurant.php';
+    require 'restaurant.php';
+} elseif (strpos($path, '/assets/') === 0) {
+    // Fichiers statiques - servis directement par app.yaml
+    header("HTTP/1.0 404 Not Found");
+    echo "Fichier non trouvé";
     exit;
-} elseif (strpos($path, 'login.php') === 0) {
-    // Page de connexion
-    require_once 'login.php';
-    exit;
-} elseif (strpos($path, 'admin/') === 0) {
-    // Pages d'administration
-    $admin_page = str_replace('admin/', '', $path);
-    if (file_exists('admin/' . $admin_page)) {
-        require_once 'admin/' . $admin_page;
-        exit;
-    } else {
-        http_response_code(404);
-        echo 'Page admin non trouvée';
-        exit;
-    }
 } else {
     // Page non trouvée
-    http_response_code(404);
-    echo 'Page non trouvée: ' . htmlspecialchars($path);
+    header("HTTP/1.0 404 Not Found");
+    echo "Page non trouvée";
     exit;
 }
 // Fonctions utilitaires
