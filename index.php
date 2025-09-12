@@ -7,43 +7,17 @@ $path = parse_url($request_uri, PHP_URL_PATH);
 // Router les requêtes
 if ($path === '/' || $path === '/index.php') {
     // Page d'accueil - le reste du code index.php
-    // Votre code existant pour la page d'accueil
 } elseif (strpos($path, '/restaurant.php') === 0) {
     // Inclure et exécuter restaurant.php
-    require_once 'restaurant.php';
+    include 'restaurant.php';
     exit;
-} elseif (strpos($path, '/assets/') === 0) {
-    // Fichiers statiques - déjà gérés par app.yaml
-    header("HTTP/1.0 404 Not Found");
-    echo "Fichier non trouvé";
-    exit;
+} elseif (preg_match('/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/', $path)) {
+    // Fichiers statiques - laisser Apache les servir
+    return false;
 } else {
     // Page non trouvée
-    header("HTTP/1.0 404 Not Found");
-    echo "Page non trouvée";
-    exit;
-}
-
-// Récupérer l'URL demandée
-$request_uri = $_SERVER['REQUEST_URI'];
-$path = parse_url($request_uri, PHP_URL_PATH);
-
-// Router les requêtes
-if ($path === '/' || $path === '/index.php') {
-    // Page d'accueil
-    require 'home.php';
-} elseif (strpos($path, '/restaurant.php') === 0) {
-    // Page restaurant
-    require 'restaurant.php';
-} elseif (strpos($path, '/assets/') === 0) {
-    // Fichiers statiques - servis directement par app.yaml
-    header("HTTP/1.0 404 Not Found");
-    echo "Fichier non trouvé";
-    exit;
-} else {
-    // Page non trouvée
-    header("HTTP/1.0 404 Not Found");
-    echo "Page non trouvée";
+    http_response_code(404);
+    echo 'Page non trouvée';
     exit;
 }
 // Fonctions utilitaires
