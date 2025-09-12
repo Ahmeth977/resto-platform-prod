@@ -6,10 +6,6 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
 
 # Protéger les fichiers sensibles
-<Files ~ "\.(env|config|log|sql|htaccess)$">
-    Deny from all
-</Files>
-
-<Files ~ "^\.env">
+<Files ~ "\.(env|config|log|sql)$">
     Deny from all
 </Files>
