@@ -2,11 +2,11 @@ runtime: php82
 service: default
 
 env_variables:
-  DB_HOST: "34.52.242.229"
+  DB_SOCKET: "/cloudsql/sencommandes:europe-west1:resto-platform-db"
   DB_NAME: "resto_platform"
   DB_USER: "root"
   DB_PASS: "781155609"
-  BASE_URL: "https://sencommandes.ew.r.appspot.com/"
+  DISPLAY_ERRORS: "On"
 
 handlers:
   # Servir les fichiers statiques directement
@@ -24,10 +24,5 @@ handlers:
     script: auto
     secure: always
 
-automatic_scaling:
-  target_cpu_utilization: 0.65
-  min_instances: 1
-  max_instances: 10
-  min_pending_latency: 30ms
-  max_pending_latency: 100ms
-  max_concurrent_requests: 50
+beta_settings:
+  cloud_sql_instances: "sencommandes:europe-west1:resto-platform-db"
