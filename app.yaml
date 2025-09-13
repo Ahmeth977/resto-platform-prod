@@ -1,15 +1,17 @@
 runtime: php82
 service: default
 
+# Ajoutez cette ligne pour utiliser le compte de service GitHub Actions
+service_account: github-actions-deploy@[VOTRE_PROJET].iam.gserviceaccount.com
+
 env_variables:
-  DB_SOCKET: "/cloudsql/sencommandes:europe-west1:resto-platform-db"
+  DB_HOST: "34.52.242.229"
   DB_NAME: "resto_platform"
   DB_USER: "root"
   DB_PASS: "781155609"
-  DISPLAY_ERRORS: "On"
+  BASE_URL: "https://sencommandes.ew.r.appspot.com/"
 
 handlers:
-  # Servir les fichiers statiques directement
   - url: /assets
     static_dir: assets
     secure: always
@@ -19,10 +21,6 @@ handlers:
     upload: .+\.(gif|png|jpg|css|js|ico|svg)$
     secure: always
 
-  # Router toutes les autres requêtes vers index.php
   - url: /.*
     script: auto
     secure: always
-
-beta_settings:
-  cloud_sql_instances: "sencommandes:europe-west1:resto-platform-db"
