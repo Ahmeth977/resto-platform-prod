@@ -22,12 +22,10 @@ if ($path === '/' || $path === '/index.php') {
             '.svg' => 'image/svg+xml',
             '.ico' => 'image/x-icon',
         ];
-        
         $ext = strtolower(strrchr($path, '.'));
         if (isset($mime_types[$ext])) {
             header('Content-Type: ' . $mime_types[$ext]);
         }
-        
         readfile($file_path);
     } else {
         http_response_code(404);
