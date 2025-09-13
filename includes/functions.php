@@ -24,16 +24,15 @@ function isAdmin() {
 /**
  * Fonction pour les produits - OPTIMISÉE
  */
+
+// functions.php - Version corrigée
+
+/**
+ * Fonction pour les produits - CORRIGÉE pour App Engine
+ */
 function getProductImage($productId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'products/';
     $baseUrl = IMG_BASE_URL . 'products/';
-    
-    // Debug seulement en mode développement
-    if (defined('DEV_MODE') && DEV_MODE) {
-        error_log("DEBUG PRODUCT: basePath = $basePath");
-        error_log("DEBUG PRODUCT: baseUrl = $baseUrl");
-        error_log("DEBUG PRODUCT: imageUrl = " . ($imageUrl ?: 'null'));
-    }
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
@@ -42,7 +41,13 @@ function getProductImage($productId, $imageUrl = null) {
             return $imageUrl;
         }
         
-        // Vérifier si le fichier existe
+        // Vérifier si le fichier existe dans le dossier products
+        $testPath = $basePath . basename($imageUrl);
+        if (file_exists($testPath) && is_file($testPath)) {
+            return $baseUrl . basename($imageUrl);
+        }
+        
+        // Vérifier si le fichier existe à l'emplacement exact
         $testPath = IMG_BASE_PATH . $imageUrl;
         if (file_exists($testPath) && is_file($testPath)) {
             return IMG_BASE_URL . $imageUrl;
@@ -71,17 +76,11 @@ function getProductImage($productId, $imageUrl = null) {
 }
 
 /**
- * Fonction pour les restaurants - OPTIMISÉE
+ * Fonction pour les restaurants - CORRIGÉE pour App Engine
  */
 function getRestaurantImage($restaurantId, $imageUrl = null) {
     $basePath = IMG_BASE_PATH . 'restaurants/';
     $baseUrl = IMG_BASE_URL . 'restaurants/';
-    
-    // Debug seulement en mode développement
-    if (defined('DEV_MODE') && DEV_MODE) {
-        error_log("DEBUG RESTAURANT: basePath = $basePath");
-        error_log("DEBUG RESTAURANT: imageUrl = " . ($imageUrl ?: 'null'));
-    }
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
@@ -90,7 +89,13 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
             return $imageUrl;
         }
         
-        // Vérifier si le fichier existe
+        // Vérifier si le fichier existe dans le dossier restaurants
+        $testPath = $basePath . basename($imageUrl);
+        if (file_exists($testPath) && is_file($testPath)) {
+            return $baseUrl . basename($imageUrl);
+        }
+        
+        // Vérifier si le fichier existe à l'emplacement exact
         $testPath = IMG_BASE_PATH . $imageUrl;
         if (file_exists($testPath) && is_file($testPath)) {
             return IMG_BASE_URL . $imageUrl;
@@ -117,7 +122,6 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     // 4. Fallback vers placeholder
     return 'https://via.placeholder.com/600x400/FF6B6B/ffffff?text=Restaurant+Non+Disponible';
 }
-
 /**
  * Fonction pour uploader les images des produits
  */
