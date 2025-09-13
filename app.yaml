@@ -1,9 +1,6 @@
 runtime: php82
 service: default
 
-# Ajoutez cette ligne pour utiliser le compte de service GitHub Actions
-service_account: github-actions-deploy@[VOTRE_PROJET].iam.gserviceaccount.com
-
 env_variables:
   DB_HOST: "34.52.242.229"
   DB_NAME: "resto_platform"
@@ -12,15 +9,23 @@ env_variables:
   BASE_URL: "https://sencommandes.ew.r.appspot.com/"
 
 handlers:
-  - url: /assets
-    static_dir: assets
-    secure: always
+- url: /.*
+  script: app.php
+  secure: always
 
-  - url: /(.+\.(gif|png|jpg|css|js|ico|svg))$
-    static_files: \1
-    upload: .+\.(gif|png|jpg|css|js|ico|svg)$
-    secure: always
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
 
-  - url: /.*
-    script: auto
-    secure: always
+network:
+  session_affinity: true
+  name: default
+
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 1
+  max_instances: 5
+  min_pending_latency: 30ms
+  max_pending_latency: 100ms
+  max_concurrent_requests: 50
