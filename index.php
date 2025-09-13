@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/includes/config.php';
+require_once __DIR__. '/includes/database.php';
 require_once __DIR__.'/includes/functions.php';
 $request_uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($request_uri, PHP_URL_PATH);
@@ -31,7 +32,7 @@ function safeOutput($data, $maxLength = 255) {
 
 // Récupération des restaurants
 try {
-   require_once __DIR__ . '/config/database.php';
+  
 $database = new Database();
 $conn = $database->getConnection();
    $stmt = $conn->prepare("
