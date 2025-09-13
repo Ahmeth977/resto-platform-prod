@@ -6,12 +6,32 @@ env_variables:
   DB_NAME: "resto_platform"
   DB_USER: "root"
   DB_PASS: "781155609"
-  BASE_URL: "https://sencommandes.ew.r.appspot.com/"
+  BASE_URL: "https://sencommandes.ew.r.appspot.com"
 
+# Gestion des fichiers statiques
 handlers:
-- url: /.*
-  script: app.php
-  secure: always
+  # Servir les assets statiques
+  - url: /assets
+    static_dir: assets
+    secure: always
+    application_readable: true
+
+  # Servir les uploads
+  - url: /uploads
+    static_dir: uploads
+    secure: always
+    application_readable: true
+
+  # Redirection pour les anciens chemins (compatibilité)
+  - url: /resto_plateform/assets
+    static_dir: assets
+    secure: always
+    application_readable: true
+
+  # Toutes les autres URLs sont gérées par app.php
+  - url: /.*
+    script: auto
+    secure: always
 
 automatic_scaling:
   target_cpu_utilization: 0.65
