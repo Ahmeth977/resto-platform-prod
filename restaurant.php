@@ -2,7 +2,6 @@
 require_once __DIR__.'/includes/config.php';
 require_once __DIR__.'/includes/functions.php';
 
-
 // Activer l'affichage des erreurs pour le debug
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -117,8 +116,8 @@ if (!empty($restaurant['opening_hours'])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS perso -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/nav.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+    <link rel="stylesheet" href="<?= asset_url('css/nav.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('css/style.css') ?>">
     
     <style>
 :root {
@@ -1055,14 +1054,13 @@ body, html {
 }
 
     </style>
-</style>
 </head>
 <body>
     <?php include __DIR__.'/includes/nav.php'; ?>
     
     <!-- Bannière publicitaire agrandie -->
     <div class="ad-banner">
-    <img src="/assets/img/ad-banner.png" alt="Publicité" class="img-fluid">
+    <img src="<?= asset_url('img/ad-banner.png') ?>" alt="Publicité" class="img-fluid">
     </div>
 
     <main class="container mb-5">
@@ -1177,1178 +1175,1038 @@ body, html {
                 </nav>
                 <?php endif; ?>
 
-                <!-- ... code précédent ... -->
+                <!-- Menus par catégorie -->
+                <?php if(!empty($categories)): ?>
+                    <?php foreach($categories as $category): ?>
+                    <section id="<?= urlencode($category['name']) ?>" class="mb-5">
+                        <h2 class="mb-4">
+                            <i class="fas fa-tag me-2 text-primary"></i>
+                            <?= htmlspecialchars($category['name']) ?>
+                        </h2>
+                        
+                        <div class="detail-list-box-main">
+                        <?php foreach($category['items'] as $menu): ?>
+                <div class="detail-list-box">
+                    <div class="detail-list">
+                        <div class="detail-list-img">
+                            <div class="list-img">
+                                <img src="<?= getProductImage($menu['id'], $menu['image_url']) ?>" 
+                                     alt="<?= htmlspecialchars($menu['name']) ?>"
+                                     loading="lazy"
+                                     onerror="this.onerror=null;this.src='<?= getProductImage(0, 'products', null) ?>'">
+                            </div>
+                        </div>
+                        <div class="detail-list-content">
+                            <div class="detail-list-text">
+                                <h3><?= htmlspecialchars($menu['name']) ?></h3>
+                                <?php  $maxLength = 100; // Par défaut
+                if (preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $_SERVER['HTTP_USER_AGENT'])) {
+                    $maxLength = 80; // Plus court sur mobile
+                }
+                ?>
 
-<!-- Menus par catégorie -->
-
-    <!-- Menus par catégorie -->
-<?php if(!empty($categories)): ?>
-    <?php foreach($categories as $category): ?>
-    <section id="<?= urlencode($category['name']) ?>" class="mb-5">
-        <h2 class="mb-4">
-            <i class="fas fa-tag me-2 text-primary"></i>
-            <?= htmlspecialchars($category['name']) ?>
-        </h2>
-        
-        <div class="detail-list-box-main">
-        <?php foreach($category['items'] as $menu): ?>
-<div class="detail-list-box">
-    <div class="detail-list">
-        <div class="detail-list-img">
-            <div class="list-img">
-                <img src="<?= getProductImage($menu['id'], $menu['image_url']) ?>" 
-                     alt="<?= htmlspecialchars($menu['name']) ?>"
-                     loading="lazy"
-                     onerror="this.onerror=null;this.src='<?= getProductImage(0, 'products', null) ?>'">
-            </div>
-        </div>
-        <div class="detail-list-content">
-            <div class="detail-list-text">
-                <h3><?= htmlspecialchars($menu['name']) ?></h3>
-                <!-- TEXTE TRONQUÉ COMME DANS L'ADMIN -->
-              <?php  $maxLength = 100; // Par défaut
-if (preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $_SERVER['HTTP_USER_AGENT'])) {
-    $maxLength = 80; // Plus court sur mobile
-}
-?>
-
-<p><?= htmlspecialchars(substr($menu['description'], 0, $maxLength)) ?><?= strlen($menu['description']) > $maxLength ? '...' : '' ?></p>
-                <strong><?= number_format($menu['price'], 2) ?> CFA</strong>
-            </div>
-            <div class="add-btn">
-                <button type="button" class="btn-add" 
-                        data-id="<?= $menu['id'] ?>"
-                        data-name="<?= htmlspecialchars($menu['name']) ?>"
-                        data-description="<?= htmlspecialchars($menu['description']) ?>"
-                        data-price="<?= $menu['price'] ?>"
-                        data-image="<?= getProductImage($menu['id'], $menu['image_url']) ?>">
-                    <i class="fas fa-eye me-1"></i>Voir détails
-                </button>
-                <span class="cust"><?= rand(5, 20) ?> commandes</span>
-            </div>
-        </div>
-    </div>
-</div>
-<?php endforeach; ?>
-        </div>
-    </section>
-    <?php endforeach; ?>
-<?php endif; ?>
-    
-
-<!-- ... suite du code ... -->
-        <!-- ... suite du code ... -->
-           
-            <!-- Colonne du panier -->
-            
-            <div class="col-sm-12 col-md-4 your_cart-c" id="your_cart">
-            <div class="your-cart-main">
-    <div class="your-cart-title">
-        <h3><i class="fas fa-shopping-cart"></i>Votre panier</h3>
-        <h6 id="cart-items-count">0 Articles</h6>
-    </div>
-    
-    <div id="cart-empty" class="cart-empty text-center">
-        <img src="assets/img/panier.png" alt="Panier vide">
-        <h6>Votre panier est vide. <br> Veuillez ajouter quelques plats pour continuer.</h6>
-    </div>
-    
-    <div id="cart-items-container" style="display: none;">
-        <div class="cart-items-list mb-3"></div>
-        
-        <div class="cart-summary">
-            <div class="d-flex justify-content-between mb-2">
-                <span>Sous-total:</span>
-                <span id="cart-subtotal">0 CFA</span>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-                <span>Frais de livraison:</span>
-                <span id="cart-delivery">1000 CFA</span>
-            </div>
-            <hr>
-            <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
-                <span>Total:</span>
-                <span id="cart-total">0 CFA</span>
-            </div>
-            
-            <button id="continue-button" class="btn btn-primary w-100 py-2" onclick="proceedToCheckout()">
-                Continuer la commande
-            </button>
-        </div>
-    </div>
-    
-    <div class="min_order_txt mt-3">
-        <p>La commande minimum doit être de 500 FCFA pour éviter des frais de livraison supplémentaires</p>
-    </div>
-</div>
-            <!-- Onglet À propos -->
-<div class="col-sm-12" id="overview" style="display: none;">
-    <div class="detail-list-box-main">
-        <div class="heading-title">
-            <h2>À propos du restaurant</h2>
-        </div>
-        
-        <div class="mb-4">
-            <?= nl2br(htmlspecialchars($restaurant['description'])) ?>
-        </div>
-        
-        <!-- Horaires d'ouverture -->
-        <div class="opening-hours">
-            <h3><i class="fas fa-clock me-2"></i>Horaires d'ouverture</h3>
-            <ul>
-                <?php foreach($openingHours as $hour): ?>
-                <li>
-                    <span><?= $hour['day'] ?></span>
-                    <span><?= $hour['hours'] ?></span>
-                </li>
+                <p><?= htmlspecialchars(substr($menu['description'], 0, $maxLength)) ?><?= strlen($menu['description']) > $maxLength ? '...' : '' ?></p>
+                                <strong><?= number_format($menu['price'], 2) ?> CFA</strong>
+                            </div>
+                            <div class="add-btn">
+                                <button type="button" class="btn-add" 
+                                        data-id="<?= $menu['id'] ?>"
+                                        data-name="<?= htmlspecialchars($menu['name']) ?>"
+                                        data-description="<?= htmlspecialchars($menu['description']) ?>"
+                                        data-price="<?= $menu['price'] ?>"
+                                        data-image="<?= getProductImage($menu['id'], $menu['image_url']) ?>">
+                                    <i class="fas fa-eye me-1"></i>Voir détails
+                                </button>
+                                <span class="cust"><?= rand(5, 20) ?> commandes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <?php endforeach; ?>
-            </ul>
-        </div>
-        
-        <!-- Informations de contact -->
-        <div class="opening-hours">
-            <h3><i class="fas fa-info-circle me-2"></i>Informations</h3>
-            <ul>
-                <li>
-                    <span><i class="fas fa-map-marker-alt me-2"></i>Adresse</span>
-                    <span><?= htmlspecialchars($restaurant['address']) ?></span>
-                </li>
-                <?php if(!empty($restaurant['phone'])): ?>
-                <li>
-                    <span><i class="fas fa-phone me-2"></i>Téléphone</span>
-                    <span><?= htmlspecialchars($restaurant['phone']) ?></span>
-                </li>
-                <?php endif; ?>
-                <?php if(!empty($restaurant['email'])): ?>
-                <li>
-                    <span><i class="fas fa-envelope me-2"></i>Email</span>
-                    <span><?= htmlspecialchars($restaurant['email']) ?></span>
-                </li>
-                <?php endif; ?>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<!-- Onglet Avis et notes -->
-<div class="col-sm-12" id="review" style="display: none;">
-    <div class="detail-list-box-main">
-        <div class="heading-title">
-            <h2>Avis et notes</h2>
-        </div>
-        
-        <!-- Résumé des notes -->
-        <div class="opening-hours mb-4">
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>Note moyenne</h3>
-                    <div class="display-4 text-primary fw-bold">
-                        <?= number_format($restaurant['avg_rating'] ?? 0, 1) ?>/5
-                    </div>
-                    <div class="rating-stars mb-2">
-                        <?php
-                        $avgRating = $restaurant['avg_rating'] ?? 0;
-                        $fullStars = floor($avgRating);
-                        $halfStar = ($avgRating - $fullStars) >= 0.5;
-                        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
-                        
-                        for ($i = 0; $i < $fullStars; $i++) {
-                            echo '<i class="fas fa-star"></i>';
-                        }
-                        
-                        if ($halfStar) {
-                            echo '<i class="fas fa-star-half-alt"></i>';
-                        }
-                        
-                        for ($i = 0; $i < $emptyStars; $i++) {
-                            echo '<i class="far fa-star"></i>';
-                        }
-                        ?>
-                    </div>
-                    <p>Basé sur <?= $restaurant['review_count'] ?? 0 ?> avis</p>
-                </div>
-
-                <div class="col-md-6">
-                    <h3>Évaluez ce restaurant</h3>
-                    <p>Partagez votre expérience avec les autres clients</p>
-                    <a href="add-review.php?restaurant_id=<?= $restoId ?>" class="btn btn-primary">
-                        <i class="fas fa-pen me-2"></i>Écrire un avis
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Liste des avis -->
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>
-            La fonctionnalité d'affichage des avis sera implémentée prochainement.
-       </div>
-       </div>
-       </div>
-
-<!-- Modal pour les détails du produit -->
-<!-- Modal pour les détails du produit -->
-<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel">Détails du produit</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <img id="modalProductImage" src="" alt="" class="img-fluid rounded">
-                    </div>
-                    <div class="col-md-6">
-                        <h3 id="modalProductName"></h3>
-                        
-                        <!-- DESCRIPTION COMPLÈTE ICI -->
-                        <div id="modalProductDescription" class="product-description-full mb-3"></div>
-                        
-                        <h4 id="modalProductPrice" class="text-primary"></h4>
-                        
-                        <!-- Options personnalisables -->
-                        <div class="customization-options mt-4">
-                            <h5>Personnalisation</h5>
-                            <div id="customizationContainer">
-                                <!-- Les options seront ajoutées dynamiquement ici -->
-                            </div>
                         </div>
-                        
-                        <!-- Quantité -->
-                        <div class="quantity-selector mt-4">
-                            <label for="productQuantity" class="form-label">Quantité:</label>
-                            <div class="input-group" style="width: 150px;">
-                                <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
-                                <input type="number" class="form-control text-center" id="productQuantity" value="1" min="1" max="10">
-                                <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
-                            </div>
-                        </div>
+                    </section>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </main>
+            
+            <!-- Colonne du panier -->
+            <div class="col-sm-12 col-md-4 your_cart-c" id="your_cart">
+                <div class="your-cart-main">
+                    <div class="your-cart-title">
+                        <h3><i class="fas fa-shopping-cart"></i>Votre panier</h3>
+                        <h6 id="cart-items-count">0 Articles</h6>
                     </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" onclick="addToCartFromModal()">
-                    <i class="fas fa-cart-plus me-2"></i>Ajouter au panier
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Ajouter ce bouton dans le body, avant la fermeture -->
-<button class="cart-toggle-btn" id="cartToggleBtn">
-    <span class="cart-badge" id="cartBadge">0</span>
-    <i class="fas fa-shopping-cart"></i>
-    <span class="cart-toggle-text">Panier</span>
-</button>
-<div class="cart-overlay" id="cartOverlay"></div>
-</div>
                     
-</main>
-<?php include __DIR__.'/includes/footer.php'; ?>
+                    <div id="cart-empty" class="cart-empty text-center">
+                        <img src="<?= asset_url('img/panier.png') ?>" alt="Panier vide">
+                        <h6>Votre panier est vide. <br> Veuillez ajouter quelques plats pour continuer.</h6>
+                    </div>
+                    
+                    <div id="cart-items-container" style="display: none;">
+                        <div class="cart-items-list mb-3"></div>
+                        
+                        <div class="cart-summary">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Sous-total:</span>
+                                <span id="cart-subtotal">0 CFA</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Frais de livraison:</span>
+                                <span id="cart-delivery">1000 CFA</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+                                <span>Total:</span>
+                                <span id="cart-total">0 CFA</span>
+                            </div>
+                            
+                            <button id="continue-button" class="btn btn-primary w-100 py-2" onclick="proceedToCheckout()">
+                                Continuer la commande
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="min_order_txt mt-3">
+                        <p>La commande minimum doit être de 500 FCFA pour éviter des frais de livraison supplémentaires</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Onglet À propos -->
+            <div class="col-sm-12" id="overview" style="display: none;">
+                <div class="detail-list-box-main">
+                    <div class="heading-title">
+                        <h2>À propos du restaurant</h2>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <?= nl2br(htmlspecialchars($restaurant['description'])) ?>
+                    </div>
+                    
+                    <!-- Horaires d'ouverture -->
+                    <div class="opening-hours">
+                        <h3><i class="fas fa-clock me-2"></i>Horaires d'ouverture</h3>
+                        <ul>
+                            <?php foreach($openingHours as $hour): ?>
+                            <li>
+                                <span><?= $hour['day'] ?></span>
+                                <span><?= $hour['hours'] ?></span>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    
+                    <!-- Informations de contact -->
+                    <div class="opening-hours">
+                        <h3><i class="fas fa-info-circle me-2"></i>Informations</h3>
+                        <ul>
+                            <li>
+                                <span><i class="fas fa-map-marker-alt me-2"></i>Adresse</span>
+                                <span><?= htmlspecialchars($restaurant['address']) ?></span>
+                            </li>
+                            <?php if(!empty($restaurant['phone'])): ?>
+                            <li>
+                                <span><i class="fas fa-phone me-2"></i>Téléphone</span>
+                                <span><?= htmlspecialchars($restaurant['phone']) ?></span>
+                            </li>
+                            <?php endif; ?>
+                            <?php if(!empty($restaurant['email'])): ?>
+                            <li>
+                                <span><i class="fas fa-envelope me-2"></i>Email</span>
+                                <span><?= htmlspecialchars($restaurant['email']) ?></span>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglet Avis et notes -->
+            <div class="col-sm-12" id="review" style="display: none;">
+                <div class="detail-list-box-main">
+                    <div class="heading-title">
+                        <h2>Avis et notes</h2>
+                    </div>
+                    
+                    <!-- Résumé des notes -->
+                    <div class="opening-hours mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>Note moyenne</h3>
+                                <div class="display-4 text-primary fw-bold">
+                                    <?= number_format($restaurant['avg_rating'] ?? 0, 1) ?>/5
+                                </div>
+                                <div class="rating-stars mb-2">
+                                    <?php
+                                    $avgRating = $restaurant['avg_rating'] ?? 0;
+                                    $fullStars = floor($avgRating);
+                                    $halfStar = ($avgRating - $fullStars) >= 0.5;
+                                    $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                                    
+                                    for ($i = 0; $i < $fullStars; $i++) {
+                                        echo '<i class="fas fa-star"></i>';
+                                    }
+                                    
+                                    if ($halfStar) {
+                                        echo '<i class="fas fa-star-half-alt"></i>';
+                                    }
+                                    
+                                    for ($i = 0; $i < $emptyStars; $i++) {
+                                        echo '<i class="far fa-star"></i>';
+                                    }
+                                    ?>
+                                </div>
+                                <p>Basé sur <?= $restaurant['review_count'] ?? 0 ?> avis</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h3>Évaluez ce restaurant</h3>
+                                <p>Partagez votre expérience avec les autres clients</p>
+                                <a href="<?= BASE_URL ?>add-review.php?restaurant_id=<?= $restoId ?>" class="btn btn-primary">
+                                    <i class="fas fa-pen me-2"></i>Écrire un avis
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Liste des avis -->
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        La fonctionnalité d'affichage des avis sera implémentée prochainement.
+                   </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal pour les détails du produit -->
+        <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel">Détails du produit</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img id="modalProductImage" src="" alt="" class="img-fluid rounded">
+                            </div>
+                            <div class="col-md-6">
+                                <h3 id="modalProductName"></h3>
+                                
+                                <!-- DESCRIPTION COMPLÈTE ICI -->
+                                <div id="modalProductDescription" class="product-description-full mb-3"></div>
+                                
+                                <h4 id="modalProductPrice" class="text-primary"></h4>
+                                
+                                <!-- Options personnalisables -->
+                                <div class="customization-options mt-4">
+                                    <h5>Personnalisation</h5>
+                                    <div id="customizationContainer">
+                                        <!-- Les options seront ajoutées dynamiquement ici -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Quantité -->
+                                <div class="quantity-selector mt-4">
+                                    <label for="productQuantity" class="form-label">Quantité:</label>
+                                    <div class="input-group" style="width: 150px;">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                                        <input type="number" class="form-control text-center" id="productQuantity" value="1" min="1" max="10">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-primary" onclick="addToCartFromModal()">
+                            <i class="fas fa-cart-plus me-2"></i>Ajouter au panier
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bouton toggle panier mobile -->
+        <button class="cart-toggle-btn" id="cartToggleBtn">
+            <span class="cart-badge" id="cartBadge">0</span>
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-toggle-text">Panier</span>
+        </button>
+        <div class="cart-overlay" id="cartOverlay"></div>
+    </main>
+    
+    <?php include __DIR__.'/includes/footer.php'; ?>
+    
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Scripts personnalisés -->
     <script>
-function showTab(tabName) {
-    console.log('Showing tab:', tabName);
-    
-    // Cacher tous les onglets
-    document.getElementById('menu').style.display = 'none';
-    document.getElementById('overview').style.display = 'none';
-    document.getElementById('review').style.display = 'none';
-    document.getElementById('your_cart').style.display = 'none';
-    
-    // Afficher l'onglet sélectionné
-    const selectedTab = document.getElementById(tabName);
-    if (selectedTab) {
-        selectedTab.style.display = 'block';
-        console.log('Tab displayed:', tabName);
-    }
-    
-    // Afficher le panier seulement pour l'onglet menu
-    if (tabName === 'menu') {
-        document.getElementById('your_cart').style.display = 'block';
-    }
-    
-    // Mettre à jour la navigation
-    document.querySelectorAll('.resttabs a').forEach(link => {
-        link.classList.remove('active');
-    });
-    
-    // Trouver le bon lien à activer
-    const activeLink = document.getElementById(tabName + '_link');
-    if (activeLink) {
-        activeLink.classList.add('active');
-    }
-    
-    // Scroll to top pour une meilleure expérience
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Initialiser les onglets au chargement
-document.addEventListener('DOMContentLoaded', function() {
-    // Afficher l'onglet menu par défaut
-    showTab('menu');
-    
-    // Ajouter les écouteurs d'événements
-    document.getElementById('menu_link').addEventListener('click', function(e) {
-        e.preventDefault();
-        showTab('menu');
-    });
-
-    document.getElementById('overview_link').addEventListener('click', function(e) {
-        e.preventDefault();
-        showTab('overview');
-    });
-
-    document.getElementById('review_link').addEventListener('click', function(e) {
-        e.preventDefault();
-        showTab('review');
-    });
-});
-
-   </script>
-   <script>
-// Variables pour stocker les infos du produit courant
-let currentProduct = null;
-
-// Afficher les détails du produit dans la modal
-// Afficher les détails du produit dans la modal
-function showProductDetails(id, name, description, price, imageUrl) {
-    currentProduct = {
-        id: id,
-        name: name,
-        description: description, // DESCRIPTION COMPLÈTE
-        price: parseFloat(price),
-        imageUrl: imageUrl
-    };
-    
-    // Mettre à jour le contenu de la modal
-    document.getElementById('modalProductImage').src = imageUrl;
-    document.getElementById('modalProductImage').alt = name;
-    document.getElementById('modalProductName').textContent = name;
-    
-    // AFFICHER LA DESCRIPTION COMPLÈTE
-    document.getElementById('modalProductDescription').innerHTML = 
-        description.replace(/\n/g, '<br>'); // Conserver les sauts de ligne
-    
-    document.getElementById('modalProductPrice').textContent = parseFloat(price).toFixed(2) + ' CFA';
-    document.getElementById('productQuantity').value = 1;
-    
-    // Charger les options de personnalisation
-    loadCustomizationOptions(id);
-    
-    // Afficher la modal avec Bootstrap
-    const productModal = new bootstrap.Modal(document.getElementById('productModal'));
-    productModal.show();
-}
-// Charger les options de personnalisation
-function loadCustomizationOptions(productId) {
-    const container = document.getElementById('customizationContainer');
-    container.innerHTML = '<div class="text-center my-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div><p class="mt-2">Chargement des options...</p></div>';
-    
-    // Simulation d'un appel AJAX pour récupérer les options
-    setTimeout(() => {
-        container.innerHTML = `
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="option-extra-cheese" data-price="500">
-                <label class="form-check-label" for="option-extra-cheese">
-                    Fromage supplémentaire (+500 CFA)
-                </label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="option-no-onions" data-price="0">
-                <label class="form-check-label" for="option-no-onions">
-                    Sans oignons
-                </label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="option-spicy" data-price="300">
-                <label class="form-check-label" for="option-spicy">
-                    Sauce piquante (+300 CFA)
-                </label>
-            </div>
-        `;
-        
-        // Ajouter les écouteurs d'événements pour mettre à jour le prix
-        document.querySelectorAll('#customizationContainer input').forEach(input => {
-            input.addEventListener('change', updateModalPrice);
-        });
-    }, 800);
-}
-
-// Mettre à jour le prix dans la modal en fonction des options
-function updateModalPrice() {
-    if (!currentProduct) return;
-    
-    let totalPrice = currentProduct.price;
-    const quantity = parseInt(document.getElementById('productQuantity').value);
-    
-    // Ajouter le prix des options sélectionnées
-    document.querySelectorAll('#customizationContainer input:checked').forEach(input => {
-        totalPrice += parseFloat(input.getAttribute('data-price') || 0);
-    });
-    
-    document.getElementById('modalProductPrice').textContent = (totalPrice * quantity).toFixed(2) + ' CFA';
-}
-
-// Gestion de la quantité
-function increaseQuantity() {
-    const input = document.getElementById('productQuantity');
-    if (input.value < 10) {
-        input.value = parseInt(input.value) + 1;
-        updateModalPrice();
-    }
-}
-
-function decreaseQuantity() {
-    const input = document.getElementById('productQuantity');
-    if (input.value > 1) {
-        input.value = parseInt(input.value) - 1;
-        updateModalPrice();
-    }
-}
-// Ajouter au panier depuis la modal
-function addToCartFromModal() {
-    if (!currentProduct) return;
-    
-    const quantity = parseInt(document.getElementById('productQuantity').value);
-    
-    // Récupérer les options sélectionnées
-    const selectedOptions = [];
-    let optionsPrice = 0;
-    
-    document.querySelectorAll('#customizationContainer input:checked').forEach(input => {
-        const optionPrice = parseFloat(input.getAttribute('data-price') || 0);
-        selectedOptions.push({
-            id: input.id,
-            name: input.nextElementSibling.textContent,
-            price: optionPrice
-        });
-        optionsPrice += optionPrice;
-    });
-    
-    // Calculer le prix total avec options
-    const totalPrice = (currentProduct.price + optionsPrice) * quantity;
-    
-    // Ajouter au panier avec TOUS les paramètres nécessaires
-    addToCart(
-        currentProduct.id, 
-        quantity, 
-        selectedOptions, 
-        totalPrice,
-        currentProduct.name, // Ajout du nom
-        currentProduct.imageUrl, // Ajout de l'image
-        currentProduct.price // Ajout du prix de base
-    );
-    
-    // Fermer la modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
-    modal.hide();
-    
-    // Afficher une notification
-    showNotification('Produit ajouté au panier!');
-}
-
-// Fonction pour ajouter au panier
-// Fonction pour ajouter au panier
-function addToCart(productId, quantity, options = [], totalPrice, productName, productImage, basePrice) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    // Créer un identifiant unique basé sur le produit et ses options
-    const optionsSignature = options.map(opt => opt.id).sort().join('-');
-    const cartItemId = `${productId}-${optionsSignature}`;
-    
-    const existingItemIndex = cart.findIndex(item => item.id === cartItemId);
-    
-    if (existingItemIndex !== -1) {
-        cart[existingItemIndex].quantity += quantity;
-        cart[existingItemIndex].totalPrice = cart[existingItemIndex].basePrice * cart[existingItemIndex].quantity;
-        
-        // Ajouter le prix des options
-        cart[existingItemIndex].options.forEach(option => {
-            cart[existingItemIndex].totalPrice += option.price * cart[existingItemIndex].quantity;
-        });
-    } else {
-        cart.push({
-            id: cartItemId,
-            productId: productId,
-            name: productName, // Stocker le nom
-            basePrice: basePrice, // Stocker le prix de base
-            options: options,
-            quantity: quantity,
-            totalPrice: totalPrice,
-            image: productImage, // Stocker l'image
-            addedAt: new Date().toISOString()
-        });
-    }
-    
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartDisplay();
-    showNotification('Produit ajouté au panier!');
-}
-// Fonction pour synchroniser le panier avec le serveur
-function syncCartWithServer() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    if (cart.length === 0) return;
-    
-    fetch('sync_cart.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            cart: cart,
-            restaurant_id: <?= $restoId ?>
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Panier synchronisé avec le serveur');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur synchronisation panier:', error);
-    });
-}
-
-// Synchroniser le panier au chargement de la page
-document.addEventListener('DOMContentLoaded', function() {
-    syncCartWithServer();
-    updateCartDisplay();
-});
-// Fonction pour afficher une notification
-function showNotification(message) {
-    // Créer l'élément de notification s'il n'existe pas
-    if (!document.getElementById('notification')) {
-        const notification = document.createElement('div');
-        notification.id = 'notification';
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background: #28a745;
-            color: white;
-            border-radius: 5px;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.3s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        `;
-        document.body.appendChild(notification);
-    }
-    
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.style.opacity = '1';
-    
-    // Cacher la notification après 3 secondes
-    setTimeout(() => {
-        notification.style.opacity = '0';
-    }, 3000);
-}
-
-// Initialiser après le chargement du document
-document.addEventListener('DOMContentLoaded', function() {
-    updateCartDisplay();
-    
-    // Déléguer les événements pour tous les boutons "Voir détails"
-    document.body.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btn-add') || e.target.closest('.btn-add')) {
-            const button = e.target.classList.contains('btn-add') ? e.target : e.target.closest('.btn-add');
-            const productId = button.getAttribute('data-id');
-            const productName = button.getAttribute('data-name');
-            const productDescription = button.getAttribute('data-description');
-            const productPrice = button.getAttribute('data-price');
-            const productImage = button.getAttribute('data-image');
+        // Fonction pour afficher les onglets
+        function showTab(tabName) {
+            console.log('Showing tab:', tabName);
             
-            showProductDetails(
-                parseInt(productId), 
-                productName, 
-                productDescription, 
-                parseFloat(productPrice), 
-                productImage
+            // Cacher tous les onglets
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('overview').style.display = 'none';
+            document.getElementById('review').style.display = 'none';
+            document.getElementById('your_cart').style.display = 'none';
+            
+            // Afficher l'onglet sélectionné
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.style.display = 'block';
+                console.log('Tab displayed:', tabName);
+            }
+            
+            // Afficher le panier seulement pour l'onglet menu
+            if (tabName === 'menu') {
+                document.getElementById('your_cart').style.display = 'block';
+            }
+            
+            // Mettre à jour la navigation
+            document.querySelectorAll('.resttabs a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Trouver le bon lien à activer
+            const activeLink = document.getElementById(tabName + '_link');
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Scroll to top pour une meilleure expérience
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialiser les onglets au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            // Afficher l'onglet menu par défaut
+            showTab('menu');
+            
+            // Ajouter les écouteurs d'événements
+            document.getElementById('menu_link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showTab('menu');
+            });
+
+            document.getElementById('overview_link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showTab('overview');
+            });
+
+            document.getElementById('review_link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showTab('review');
+            });
+        });
+
+        // Variables pour stocker les infos du produit courant
+        let currentProduct = null;
+
+        // Afficher les détails du produit dans la modal
+        function showProductDetails(id, name, description, price, imageUrl) {
+            currentProduct = {
+                id: id,
+                name: name,
+                description: description, // DESCRIPTION COMPLÈTE
+                price: parseFloat(price),
+                imageUrl: imageUrl
+            };
+            
+            // Mettre à jour le contenu de la modal
+            document.getElementById('modalProductImage').src = imageUrl;
+            document.getElementById('modalProductImage').alt = name;
+            document.getElementById('modalProductName').textContent = name;
+            
+            // AFFICHER LA DESCRIPTION COMPLÈTE
+            document.getElementById('modalProductDescription').innerHTML = 
+                description.replace(/\n/g, '<br>'); // Conserver les sauts de ligne
+            
+            document.getElementById('modalProductPrice').textContent = parseFloat(price).toFixed(2) + ' CFA';
+            document.getElementById('productQuantity').value = 1;
+            
+            // Charger les options de personnalisation
+            loadCustomizationOptions(id);
+            
+            // Afficher la modal avec Bootstrap
+            const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+            productModal.show();
+        }
+
+        // Charger les options de personnalisation
+        function loadCustomizationOptions(productId) {
+            const container = document.getElementById('customizationContainer');
+            container.innerHTML = '<div class="text-center my-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div><p class="mt-2">Chargement des options...</p></div>';
+            
+            // Simulation d'un appel AJAX pour récupérer les options
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="option-extra-cheese" data-price="500">
+                        <label class="form-check-label" for="option-extra-cheese">
+                            Fromage supplémentaire (+500 CFA)
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="option-no-onions" data-price="0">
+                        <label class="form-check-label" for="option-no-onions">
+                            Sans oignons
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="option-spicy" data-price="300">
+                        <label class="form-check-label" for="option-spicy">
+                            Sauce piquante (+300 CFA)
+                        </label>
+                    </div>
+                `;
+                
+                // Ajouter les écouteurs d'événements pour mettre à jour le prix
+                document.querySelectorAll('#customizationContainer input').forEach(input => {
+                    input.addEventListener('change', updateModalPrice);
+                });
+            }, 800);
+        }
+
+        // Mettre à jour le prix dans la modal en fonction des options
+        function updateModalPrice() {
+            if (!currentProduct) return;
+            
+            let totalPrice = currentProduct.price;
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+            
+            // Ajouter le prix des options sélectionnées
+            document.querySelectorAll('#customizationContainer input:checked').forEach(input => {
+                totalPrice += parseFloat(input.getAttribute('data-price') || 0);
+            });
+            
+            document.getElementById('modalProductPrice').textContent = (totalPrice * quantity).toFixed(2) + ' CFA';
+        }
+
+        // Gestion de la quantité
+        function increaseQuantity() {
+            const input = document.getElementById('productQuantity');
+            if (input.value < 10) {
+                input.value = parseInt(input.value) + 1;
+                updateModalPrice();
+            }
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('productQuantity');
+            if (input.value > 1) {
+                input.value = parseInt(input.value) - 1;
+                updateModalPrice();
+            }
+        }
+
+        // Ajouter au panier depuis la modal
+        function addToCartFromModal() {
+            if (!currentProduct) return;
+            
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+            
+            // Récupérer les options sélectionnées
+            const selectedOptions = [];
+            let optionsPrice = 0;
+            
+            document.querySelectorAll('#customizationContainer input:checked').forEach(input => {
+                const optionPrice = parseFloat(input.getAttribute('data-price') || 0);
+                selectedOptions.push({
+                    id: input.id,
+                    name: input.nextElementSibling.textContent,
+                    price: optionPrice
+                });
+                optionsPrice += optionPrice;
+            });
+            
+            // Calculer le prix total avec options
+            const totalPrice = (currentProduct.price + optionsPrice) * quantity;
+            
+            // Ajouter au panier avec TOUS les paramètres nécessaires
+            addToCart(
+                currentProduct.id, 
+                quantity, 
+                selectedOptions, 
+                totalPrice,
+                currentProduct.name, // Ajout du nom
+                currentProduct.imageUrl, // Ajout de l'image
+                currentProduct.price // Ajout du prix de base
             );
+            
+            // Fermer la modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+            modal.hide();
+            
+            // Afficher une notification
+            showNotification('Produit ajouté au panier!');
         }
-    });
-});
-// Fonction pour afficher une notification toast
-function showToast(message, type = 'success') {
-    // Créer le toast s'il n'existe pas
-    if (!document.getElementById('toastContainer')) {
-        const toastContainer = document.createElement('div');
-        toastContainer.id = 'toastContainer';
-        toastContainer.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        `;
-        document.body.appendChild(toastContainer);
-    }
-    
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type} alert-dismissible fade show`;
-    toast.style.cssText = `
-        min-width: 300px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        margin-bottom: 0;
-    `;
-    toast.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    document.getElementById('toastContainer').appendChild(toast);
-    
-    // Supprimer le toast après 3 secondes
-    setTimeout(() => {
-        if (toast.parentNode) {
-            toast.parentNode.removeChild(toast);
+
+        // Fonction pour ajouter au panier
+        function addToCart(productId, quantity, options = [], totalPrice, productName, productImage, basePrice) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Créer un identifiant unique basé sur le produit et ses options
+            const optionsSignature = options.map(opt => opt.id).sort().join('-');
+            const cartItemId = `${productId}-${optionsSignature}`;
+            
+            const existingItemIndex = cart.findIndex(item => item.id === cartItemId);
+            
+            if (existingItemIndex !== -1) {
+                cart[existingItemIndex].quantity += quantity;
+                cart[existingItemIndex].totalPrice = cart[existingItemIndex].basePrice * cart[existingItemIndex].quantity;
+                
+                // Ajouter le prix des options
+                cart[existingItemIndex].options.forEach(option => {
+                    cart[existingItemIndex].totalPrice += option.price * cart[existingItemIndex].quantity;
+                });
+            } else {
+                cart.push({
+                    id: cartItemId,
+                    productId: productId,
+                    name: productName, // Stocker le nom
+                    basePrice: basePrice, // Stocker le prix de base
+                    options: options,
+                    quantity: quantity,
+                    totalPrice: totalPrice,
+                    image: productImage, // Stocker l'image
+                    addedAt: new Date().toISOString()
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+            showNotification('Produit ajouté au panier!');
         }
-    }, 3000);
-}
 
-// Modifier la fonction showNotification pour utiliser le toast
-function showNotification(message) {
-    showToast(message, 'success');
-}
-// Fonction pour mettre à jour l'affichage du panier
-function updateCartDisplay() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-    
-    // Mettre à jour le compteur d'articles
-    document.getElementById('cart-items-count').textContent = `${totalItems} Articles`;
-    
-    if (totalItems > 0) {
-        // Masquer le message de panier vide
-        document.getElementById('cart-empty').style.display = 'none';
-        document.getElementById('cart-items-container').style.display = 'block';
-        
-        // Afficher les articles du panier
-        const cartItemsContainer = document.querySelector('.cart-items-list');
-        cartItemsContainer.innerHTML = '';
-        
-        cart.forEach(item => {
-            const cartItem = document.createElement('div');
-            cartItem.className = 'cart-item';
-            cartItem.dataset.id = item.id;
+        // Fonction pour synchroniser le panier avec le serveur
+        function syncCartWithServer() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) return;
             
-            // Formater les options sélectionnées
-            const optionsText = item.options.length > 0 
-                ? item.options.map(opt => opt.name).join(', ') 
-                : '';
-            
-            cartItem.innerHTML = `
-                <div class="cart-item-info">
-                    <div class="cart-item-name">${item.name} x${item.quantity}</div>
-                    ${optionsText ? `<div class="cart-item-options">${optionsText}</div>` : ''}
-                    <div class="cart-item-price">${item.totalPrice.toFixed(2)} CFA</div>
-                </div>
-                <div class="cart-item-quantity">
-                    <button class="quantity-btn" onclick="changeQuantity('${item.id}', -1)">-</button>
-                    <span>${item.quantity}</span>
-                    <button class="quantity-btn" onclick="changeQuantity('${item.id}', 1)">+</button>
-                    <button class="remove-item" onclick="removeFromCart('${item.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-            
-            cartItemsContainer.appendChild(cartItem);
-        });
-        
-        // Calculer les frais de livraison (gratuits à partir de 500 CFA)
-        const deliveryFee = 1000;
-        const total = subtotal + deliveryFee;
-        
-        // Mettre à jour les totaux
-        document.getElementById('cart-subtotal').textContent = `${subtotal.toFixed(2)} CFA`;
-        document.getElementById('cart-delivery').textContent = `${deliveryFee.toFixed(2)} CFA`;
-        document.getElementById('cart-total').textContent = `${total.toFixed(2)} CFA`;
-        
-        // Mettre à jour le message de commande minimum
-        const minOrderText = document.querySelector('.min_order_txt p');
-if (subtotal < 500) {
-    const remaining = (500 - subtotal).toFixed(2);
-    minOrderText.innerHTML = `Ajoutez encore <strong>${remaining} CFA</strong> pour éviter des frais de livraison supplémentaires`;
-} else {
-    minOrderText.textContent = 'Félicitations! Vous évitez les frais de livraison supplémentaires';
-}
-    } else {
-        // Afficher le message de panier vide
-        document.getElementById('cart-empty').style.display = 'block';
-        document.getElementById('cart-items-container').style.display = 'none';
-        
-        // Réinitialiser le message de commande minimum
-        document.querySelector('.min_order_txt p').textContent = 
-            'La commande minimum doit être de 500 FCFA pour éviter des frais de livraison supplémentaires';
-    }
-}
-
-// Fonction pour modifier la quantité d'un article
-function changeQuantity(itemId, change) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const itemIndex = cart.findIndex(item => item.id === itemId);
-    
-    if (itemIndex !== -1) {
-        const newQuantity = cart[itemIndex].quantity + change;
-        
-        if (newQuantity <= 0) {
-            // Supprimer l'article si la quantité devient 0
-            cart.splice(itemIndex, 1);
-        } else {
-            // Mettre à jour la quantité et le prix total
-            cart[itemIndex].quantity = newQuantity;
-            cart[itemIndex].totalPrice = cart[itemIndex].basePrice * newQuantity;
-            
-            // Ajouter le prix des options
-            cart[itemIndex].options.forEach(option => {
-                cart[itemIndex].totalPrice += option.price * newQuantity;
+            fetch('sync_cart.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cart: cart,
+                    restaurant_id: <?= $restoId ?>
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Panier synchronisé avec le serveur');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur synchronisation panier:', error);
             });
         }
-        
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartDisplay();
-        showNotification('Panier mis à jour');
-    }
-}
 
-// Fonction pour supprimer un article du panier
-function removeFromCart(itemId) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart = cart.filter(item => item.id !== itemId);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartDisplay();
-    showNotification('Article supprimé du panier');
-}
-
-// Fonction pour le bouton "Continuer"
-// Fonction pour le bouton "Continuer"
-// Fonction pour le bouton "Continuer"
-// Fonction pour le bouton "Continuer"
-// Fonction pour le bouton "Continuer" (version alternative)
-function proceedToCheckout() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    if (cart.length === 0) {
-        showToast('Votre panier est vide', 'warning');
-        return;
-    }
-    
-    // Afficher un indicateur de chargement
-    const continueButton = document.getElementById('continue-button');
-    const originalText = continueButton.innerHTML;
-    continueButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Traitement...';
-    continueButton.disabled = true;
-    
-    // Créer un formulaire pour envoyer les données
-    const formData = new FormData();
-    formData.append('action', 'save_cart');
-    formData.append('cart_data', JSON.stringify(cart));
-    formData.append('restaurant_id', <?= $restoId ?>);
-    
-    // Envoyer les données via POST standard
-    fetch('<?= $_SERVER['PHP_SELF'] ?>', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('Redirection vers la livraison...', 'success');
+        // Fonction pour afficher une notification
+        function showNotification(message) {
+            // Créer l'élément de notification s'il n'existe pas
+            if (!document.getElementById('notification')) {
+                const notification = document.createElement('div');
+                notification.id = 'notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 15px 20px;
+                    background: #28a745;
+                    color: white;
+                    border-radius: 5px;
+                    z-index: 9999;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                `;
+                document.body.appendChild(notification);
+            }
+            
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.opacity = '1';
+            
+            // Cacher la notification après 3 secondes
             setTimeout(() => {
-                window.location.href = 'delivery_info.php?restaurant_id=<?= $restoId ?>';
-            }, 1000);
-        } else {
-            throw new Error(data.error || 'Erreur inconnue');
+                notification.style.opacity = '0';
+            }, 3000);
         }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        showToast('Erreur: ' + error.message, 'error');
-        continueButton.innerHTML = originalText;
-        continueButton.disabled = false;
-    });
-}
-// Appeler cette fonction pour vérifier l'état du panier
-document.addEventListener('DOMContentLoaded', function() {
-    debugCart();
-    
-    // Vérifier aussi le bouton continue
-    const continueButton = document.getElementById('continue-button');
-    if (continueButton) {
-        continueButton.addEventListener('click', function(e) {
-            console.log('Bouton continuer cliqué');
-            debugCart();
-        });
-    }
-});
 
-// Fonction pour fermer le panier
-
-// ===== FONCTIONS DE GESTION DU PANIER =====
-
-// Fonction pour fermer le panier
-function closeCart() {
-    const cartElement = document.querySelector('.your-cart-main');
-    const cartToggleBtn = document.getElementById('cartToggleBtn');
-    const cartOverlay = document.getElementById('cartOverlay');
-    
-    if (cartElement) {
-        cartElement.classList.remove('cart-open');
-        
-        if (cartToggleBtn) {
-            const icon = cartToggleBtn.querySelector('i');
-            if (icon) {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-shopping-cart');
-            }
-            const text = cartToggleBtn.querySelector('.cart-toggle-text');
-            if (text) {
-                text.textContent = 'Panier';
-            }
-        }
-        
-        if (cartOverlay) {
-            cartOverlay.style.display = 'none';
-        }
-    }
-}
-
-// Fonction pour ouvrir le panier
-function openCart() {
-    const cartElement = document.querySelector('.your-cart-main');
-    const cartToggleBtn = document.getElementById('cartToggleBtn');
-    const cartOverlay = document.getElementById('cartOverlay');
-    
-    if (cartElement) {
-        cartElement.classList.add('cart-open');
-        
-        if (cartToggleBtn) {
-            const icon = cartToggleBtn.querySelector('i');
-            if (icon) {
-                icon.classList.remove('fa-shopping-cart');
-                icon.classList.add('fa-times');
-            }
-            const text = cartToggleBtn.querySelector('.cart-toggle-text');
-            if (text) {
-                text.textContent = 'Fermer';
-            }
-        }
-        
-        if (cartOverlay) {
-            cartOverlay.style.display = 'block';
-        }
-    }
-}
-
-// Vérifier si un clic est en dehors du panier
-function setupClickOutsideToClose() {
-    document.addEventListener('click', function(e) {
-        const cartElement = document.querySelector('.your-cart-main');
-        const cartToggleBtn = document.getElementById('cartToggleBtn');
-        
-        // Si le panier est ouvert et qu'on clique en dehors du panier et du bouton toggle
-        if (cartElement && cartElement.classList.contains('cart-open') && 
-            !cartElement.contains(e.target) && 
-            (!cartToggleBtn || !cartToggleBtn.contains(e.target))) {
-            closeCart();
-        }
-    });
-}
-
-// Configuration du bouton de toggle du panier
-function setupCartToggle() {
-    const cartToggleBtn = document.getElementById('cartToggleBtn');
-    const cartElement = document.querySelector('.your-cart-main');
-    const cartOverlay = document.getElementById('cartOverlay');
-    
-    if (cartToggleBtn && cartElement) {
-        // Supprimer les anciens écouteurs pour éviter les doublons
-        cartToggleBtn.replaceWith(cartToggleBtn.cloneNode(true));
-        const newCartToggleBtn = document.getElementById('cartToggleBtn');
-        
-        newCartToggleBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
+        // Fonction pour mettre à jour l'affichage du panier
+        function updateCartDisplay() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
             
-            if (cartElement.classList.contains('cart-open')) {
-                closeCart();
-            } else {
-                openCart();
-            }
-        });
-        
-        // Empêcher la fermeture lorsqu'on clique dans le panier
-        cartElement.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-        
-        // Fermer le panier en cliquant sur l'overlay
-        if (cartOverlay) {
-            cartOverlay.addEventListener('click', closeCart);
-        }
-    }
-}
-
-// Mettre à jour le badge du panier
-function updateCartBadge() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const cartBadge = document.getElementById('cartBadge');
-    
-    if (cartBadge) {
-        if (totalItems > 0) {
-            cartBadge.textContent = totalItems;
-            cartBadge.style.display = 'flex';
-        } else {
-            cartBadge.style.display = 'none';
-        }
-    }
-}
-
-// ===== INITIALISATION =====
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialiser le toggle du panier
-    setupCartToggle();
-    
-    // Configurer la fermeture en cliquant à l'extérieur
-    setupClickOutsideToClose();
-    
-    // Mettre à jour le badge du panier
-    updateCartBadge();
-    
-    // Fermer le panier sur les grands écrans
-    if (window.innerWidth > 992) {
-        closeCart();
-    }
-    
-    // Adapter le panier lors du redimensionnement
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 992) {
-            closeCart();
-        }
-    });
-    
-    // Mettre à jour l'affichage du panier
-    updateCartDisplay();
-});
-
-// ===== FONCTIONS EXISTANTES (à conserver) =====
-
-// Vos fonctions existantes comme showProductDetails, addToCart, updateCartDisplay, etc.
-// doivent être conservées ici...
-// REMPLACER le code problématique par ceci :
-// Supprimer les deux blocs dupliqués et garder UNE SEULE version :
-
-// Sauvegarder la fonction originale
-const originalUpdateCartDisplay = window.updateCartDisplay;
-
-// Surcharger la fonction
-window.updateCartDisplay = function() {
-    if (originalUpdateCartDisplay) {
-        originalUpdateCartDisplay.apply(this, arguments);
-    }
-    updateCartBadge();
-};
-// Forcer le recalcul du layout après le chargement
-window.addEventListener('load', function() {
-    document.querySelectorAll('.detail-list-text p').forEach(p => {
-        // Force le navigateur à recalculer le layout
-        p.style.display = 'none';
-        p.offsetHeight; // Trigger reflow
-        p.style.display = '-webkit-box';
-    });
-});
-// Fonction pour le bouton "Continuer"
-// Fonction pour le bouton "Continuer"
-// Fonction simplifiée pour le bouton "Continuer"
-function proceedToCheckout() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    if (cart.length === 0) {
-        showToast('Votre panier est vide', 'warning');
-        return;
-    }
-    
-    // Sauvegarder le panier dans la session via AJAX
-    fetch('save_cart_session.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            cart: cart,
-            restaurant_id: <?= $restoId ?>
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Rediriger vers delivery_info.php
-            window.location.href = 'delivery_info.php?restaurant_id=<?= $restoId ?>';
-        } else {
-            showToast('Erreur lors de la sauvegarde du panier', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        showToast('Erreur de connexion', 'error');
-    });
-}
-</script>
-
-<script>
-// Forcer le recalcul du layout pour corriger le texte
-document.addEventListener('DOMContentLoaded', function() {
-    // Réappliquer les styles pour forcer le rendu correct
-    setTimeout(function() {
-        const textElements = document.querySelectorAll('.detail-list-text p');
-        textElements.forEach(function(el) {
-            el.style.display = 'none';
-            void el.offsetHeight; // Force reflow
-            el.style.display = '-webkit-box';
-        });
-    }, 100);
-});
-
-// Solution alternative si le problème persiste
-function fixTextOverflow() {
-    document.querySelectorAll('.detail-list').forEach(card => {
-        const textElement = card.querySelector('.detail-list-text p');
-        if (textElement.scrollHeight > textElement.offsetHeight) {
-            // Ajouter une classe si le texte dépasse
-            card.classList.add('text-overflowing');
-        }
-    });
-}
-
-// Exécuter après le chargement complet
-window.addEventListener('load', fixTextOverflow);
-</script>
-<script>
-// CORRECTION DÉFINITIVE DU TEXTE
-function enforceTextLimits() {
-    const descriptions = document.querySelectorAll('.product-description');
-    
-    descriptions.forEach(desc => {
-        // Réinitialiser
-        desc.style.display = 'block';
-        desc.style.webkitLineClamp = '';
-        desc.style.maxHeight = '';
-        
-        // Forcer le recalcul
-        void desc.offsetHeight;
-        
-        // Si le texte dépasse la hauteur maximale, appliquer l'ellipsis
-        if (desc.scrollHeight > desc.offsetHeight) {
-            desc.style.display = '-webkit-box';
-            desc.style.webkitLineClamp = '3';
-            desc.style.overflow = 'hidden';
+            // Mettre à jour le compteur d'articles
+            document.getElementById('cart-items-count').textContent = `${totalItems} Articles`;
             
-            // Ajustement pour mobile
-            if (window.innerWidth <= 576) {
-                desc.style.webkitLineClamp = '2';
-                desc.style.maxHeight = '2.8em';
-            }
-        }
-    });
-}
-
-// Exécuter immédiatement et après le chargement
-document.addEventListener('DOMContentLoaded', enforceTextLimits);
-window.addEventListener('resize', enforceTextLimits);
-
-// Réexécuter après un délai pour s'assurer que tout est chargé
-setTimeout(enforceTextLimits, 100);
-setTimeout(enforceTextLimits, 500);
-setTimeout(enforceTextLimits, 1000);
-</script>
-<script>
-// Détection de la prise en charge de line-clamp
-function supportsLineClamp() {
-    const testElement = document.createElement('div');
-    testElement.style.webkitLineClamp = '2';
-    return testElement.style.webkitLineClamp !== undefined;
-}
-
-// Appliquer line-clamp seulement si supporté
-function applyLineClampIfSupported() {
-    if (supportsLineClamp()) {
-        const descriptions = document.querySelectorAll('.detail-list-text p');
-        descriptions.forEach(desc => {
-            desc.style.display = '-webkit-box';
-            desc.style.webkitLineClamp = '3';
-            desc.style.webkitBoxOrient = 'vertical';
-            desc.style.overflow = 'hidden';
-            desc.style.maxHeight = 'none';
-            
-            // Enlever le gradient pour les navigateurs modernes
-            desc.style.position = 'static';
-        });
-        
-        // Supprimer les pseudo-éléments after
-        const style = document.createElement('style');
-        style.textContent = `
-            .detail-list-text p::after {
-                display: none !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-// Exécuter au chargement
-document.addEventListener('DOMContentLoaded', applyLineClampIfSupported);
-</script>
-<script>
-// Garantir que les descriptions sont correctement limitées
-document.addEventListener('DOMContentLoaded', function() {
-    // Attendre que les images soient chargées
-    setTimeout(function() {
-        const descriptions = document.querySelectorAll('.detail-list-text p');
-        
-        descriptions.forEach(function(desc) {
-            // Vérifier si le texte dépasse
-            if (desc.scrollHeight > desc.offsetHeight) {
-                // S'assurer que les styles sont appliqués
-                desc.style.display = '-webkit-box';
-                desc.style.webkitLineClamp = '3';
-                desc.style.webkitBoxOrient = 'vertical';
-                desc.style.overflow = 'hidden';
+            if (totalItems > 0) {
+                // Masquer le message de panier vide
+                document.getElementById('cart-empty').style.display = 'none';
+                document.getElementById('cart-items-container').style.display = 'block';
                 
-                // Pour les navigateurs qui ne supportent pas line-clamp
-                if (!('webkitLineClamp' in desc.style)) {
-                    desc.classList.add('fallback');
+                // Afficher les articles du panier
+                const cartItemsContainer = document.querySelector('.cart-items-list');
+                cartItemsContainer.innerHTML = '';
+                
+                cart.forEach(item => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.dataset.id = item.id;
+                    
+                    // Formater les options sélectionnées
+                    const optionsText = item.options.length > 0 
+                        ? item.options.map(opt => opt.name).join(', ') 
+                        : '';
+                    
+                    cartItem.innerHTML = `
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name} x${item.quantity}</div>
+                            ${optionsText ? `<div class="cart-item-options">${optionsText}</div>` : ''}
+                            <div class="cart-item-price">${item.totalPrice.toFixed(2)} CFA</div>
+                        </div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn" onclick="changeQuantity('${item.id}', -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="quantity-btn" onclick="changeQuantity('${item.id}', 1)">+</button>
+                            <button class="remove-item" onclick="removeFromCart('${item.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    cartItemsContainer.appendChild(cartItem);
+                });
+                
+                // Calculer les frais de livraison (gratuits à partir de 500 CFA)
+                const deliveryFee = 1000;
+                const total = subtotal + deliveryFee;
+                
+                // Mettre à jour les totaux
+                document.getElementById('cart-subtotal').textContent = `${subtotal.toFixed(2)} CFA`;
+                document.getElementById('cart-delivery').textContent = `${deliveryFee.toFixed(2)} CFA`;
+                document.getElementById('cart-total').textContent = `${total.toFixed(2)} CFA`;
+                
+                // Mettre à jour le message de commande minimum
+                const minOrderText = document.querySelector('.min_order_txt p');
+                if (subtotal < 500) {
+                    const remaining = (500 - subtotal).toFixed(2);
+                    minOrderText.innerHTML = `Ajoutez encore <strong>${remaining} CFA</strong> pour éviter des frais de livraison supplémentaires`;
+                } else {
+                    minOrderText.textContent = 'Félicitations! Vous évitez les frais de livraison supplémentaires';
+                }
+            } else {
+                // Afficher le message de panier vide
+                document.getElementById('cart-empty').style.display = 'block';
+                document.getElementById('cart-items-container').style.display = 'none';
+                
+                // Réinitialiser le message de commande minimum
+                document.querySelector('.min_order_txt p').textContent = 
+                    'La commande minimum doit être de 500 FCFA pour éviter des frais de livraison supplémentaires';
+            }
+            
+            // Mettre à jour le badge du panier
+            updateCartBadge();
+        }
+
+        // Fonction pour modifier la quantité d'un article
+        function changeQuantity(itemId, change) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const itemIndex = cart.findIndex(item => item.id === itemId);
+            
+            if (itemIndex !== -1) {
+                const newQuantity = cart[itemIndex].quantity + change;
+                
+                if (newQuantity <= 0) {
+                    // Supprimer l'article si la quantité devient 0
+                    cart.splice(itemIndex, 1);
+                } else {
+                    // Mettre à jour la quantité et le prix total
+                    cart[itemIndex].quantity = newQuantity;
+                    cart[itemIndex].totalPrice = cart[itemIndex].basePrice * newQuantity;
+                    
+                    // Ajouter le prix des options
+                    cart[itemIndex].options.forEach(option => {
+                        cart[itemIndex].totalPrice += option.price * newQuantity;
+                    });
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartDisplay();
+                showNotification('Panier mis à jour');
+            }
+        }
+
+        // Fonction pour supprimer un article du panier
+        function removeFromCart(itemId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.id !== itemId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+            showNotification('Article supprimé du panier');
+        }
+
+        // Fonction pour le bouton "Continuer"
+        function proceedToCheckout() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                showToast('Votre panier est vide', 'warning');
+                return;
+            }
+            
+            // Sauvegarder le panier dans la session via AJAX
+            fetch('save_cart_session.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cart: cart,
+                    restaurant_id: <?= $restoId ?>
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Rediriger vers delivery_info.php
+                    window.location.href = 'delivery_info.php?restaurant_id=<?= $restoId ?>';
+                } else {
+                    showToast('Erreur lors de la sauvegarde du panier', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showToast('Erreur de connexion', 'error');
+            });
+        }
+
+        // Fonction pour afficher une notification toast
+        function showToast(message, type = 'success') {
+            // Créer le toast s'il n'existe pas
+            if (!document.getElementById('toastContainer')) {
+                const toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} alert-dismissible fade show`;
+            toast.style.cssText = `
+                min-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                margin-bottom: 0;
+            `;
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            // Supprimer le toast après 3 secondes
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        // Fonction pour fermer le panier
+        function closeCart() {
+            const cartElement = document.querySelector('.your-cart-main');
+            const cartToggleBtn = document.getElementById('cartToggleBtn');
+            const cartOverlay = document.getElementById('cartOverlay');
+            
+            if (cartElement) {
+                cartElement.classList.remove('cart-open');
+                
+                if (cartToggleBtn) {
+                    const icon = cartToggleBtn.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-shopping-cart');
+                    }
+                    const text = cartToggleBtn.querySelector('.cart-toggle-text');
+                    if (text) {
+                        text.textContent = 'Panier';
+                    }
+                }
+                
+                if (cartOverlay) {
+                    cartOverlay.style.display = 'none';
                 }
             }
-        });
-    }, 500);
-});
+        }
 
-// Réappliquer après le redimensionnement
-window.addEventListener('resize', function() {
-    const descriptions = document.querySelectorAll('.detail-list-text p');
-    descriptions.forEach(function(desc) {
-        desc.style.display = 'block';
-        
-        // Forcer le recalcul
-        void desc.offsetWidth;
-        
-        desc.style.display = '-webkit-box';
-    });
-});
-</script>
+        // Fonction pour ouvrir le panier
+        function openCart() {
+            const cartElement = document.querySelector('.your-cart-main');
+            const cartToggleBtn = document.getElementById('cartToggleBtn');
+            const cartOverlay = document.getElementById('cartOverlay');
+            
+            if (cartElement) {
+                cartElement.classList.add('cart-open');
+                
+                if (cartToggleBtn) {
+                    const icon = cartToggleBtn.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('fa-shopping-cart');
+                        icon.classList.add('fa-times');
+                    }
+                    const text = cartToggleBtn.querySelector('.cart-toggle-text');
+                    if (text) {
+                        text.textContent = 'Fermer';
+                    }
+                }
+                
+                if (cartOverlay) {
+                    cartOverlay.style.display = 'block';
+                }
+            }
+        }
+
+        // Vérifier si un clic est en dehors du panier
+        function setupClickOutsideToClose() {
+            document.addEventListener('click', function(e) {
+                const cartElement = document.querySelector('.your-cart-main');
+                const cartToggleBtn = document.getElementById('cartToggleBtn');
+                
+                // Si le panier est ouvert et qu'on clique en dehors du panier et du bouton toggle
+                if (cartElement && cartElement.classList.contains('cart-open') && 
+                    !cartElement.contains(e.target) && 
+                    (!cartToggleBtn || !cartToggleBtn.contains(e.target))) {
+                    closeCart();
+                }
+            });
+        }
+
+        // Configuration du bouton de toggle du panier
+        function setupCartToggle() {
+            const cartToggleBtn = document.getElementById('cartToggleBtn');
+            const cartElement = document.querySelector('.your-cart-main');
+            const cartOverlay = document.getElementById('cartOverlay');
+            
+            if (cartToggleBtn && cartElement) {
+                // Supprimer les anciens écouteurs pour éviter les doublons
+                cartToggleBtn.replaceWith(cartToggleBtn.cloneNode(true));
+                const newCartToggleBtn = document.getElementById('cartToggleBtn');
+                
+                newCartToggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    if (cartElement.classList.contains('cart-open')) {
+                        closeCart();
+                    } else {
+                        openCart();
+                    }
+                });
+                
+                // Empêcher la fermeture lorsqu'on clique dans le panier
+                cartElement.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+                
+                // Fermer le panier en cliquant sur l'overlay
+                if (cartOverlay) {
+                    cartOverlay.addEventListener('click', closeCart);
+                }
+            }
+        }
+
+        // Mettre à jour le badge du panier
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartBadge = document.getElementById('cartBadge');
+            
+            if (cartBadge) {
+                if (totalItems > 0) {
+                    cartBadge.textContent = totalItems;
+                    cartBadge.style.display = 'flex';
+                } else {
+                    cartBadge.style.display = 'none';
+                }
+            }
+        }
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le toggle du panier
+            setupCartToggle();
+            
+            // Configurer la fermeture en cliquant à l'extérieur
+            setupClickOutsideToClose();
+            
+            // Mettre à jour le badge du panier
+            updateCartBadge();
+            
+            // Fermer le panier sur les grands écrans
+            if (window.innerWidth > 992) {
+                closeCart();
+            }
+            
+            // Adapter le panier lors du redimensionnement
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 992) {
+                    closeCart();
+                }
+            });
+            
+            // Mettre à jour l'affichage du panier
+            updateCartDisplay();
+            
+            // Synchroniser le panier avec le serveur
+            syncCartWithServer();
+            
+            // Déléguer les événements pour tous les boutons "Voir détails"
+            document.body.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-add') || e.target.closest('.btn-add')) {
+                    const button = e.target.classList.contains('btn-add') ? e.target : e.target.closest('.btn-add');
+                    const productId = button.getAttribute('data-id');
+                    const productName = button.getAttribute('data-name');
+                    const productDescription = button.getAttribute('data-description');
+                    const productPrice = button.getAttribute('data-price');
+                    const productImage = button.getAttribute('data-image');
+                    
+                    showProductDetails(
+                        parseInt(productId), 
+                        productName, 
+                        productDescription, 
+                        parseFloat(productPrice), 
+                        productImage
+                    );
+                }
+            });
+        });
+
+        // CORRECTION DÉFINITIVE DU TEXTE
+        function enforceTextLimits() {
+            const descriptions = document.querySelectorAll('.product-description');
+            
+            descriptions.forEach(desc => {
+                // Réinitialiser
+                desc.style.display = 'block';
+                desc.style.webkitLineClamp = '';
+                desc.style.maxHeight = '';
+                
+                // Forcer le recalcul
+                void desc.offsetHeight;
+                
+                // Si le texte dépasse la hauteur maximale, appliquer l'ellipsis
+                if (desc.scrollHeight > desc.offsetHeight) {
+                    desc.style.display = '-webkit-box';
+                    desc.style.webkitLineClamp = '3';
+                    desc.style.overflow = 'hidden';
+                    
+                    // Ajustement pour mobile
+                    if (window.innerWidth <= 576) {
+                        desc.style.webkitLineClamp = '2';
+                        desc.style.maxHeight = '2.8em';
+                    }
+                }
+            });
+        }
+
+        // Détection de la prise en charge de line-clamp
+        function supportsLineClamp() {
+            const testElement = document.createElement('div');
+            testElement.style.webkitLineClamp = '2';
+            return testElement.style.webkitLineClamp !== undefined;
+        }
+
+        // Appliquer line-clamp seulement si supporté
+        function applyLineClampIfSupported() {
+            if (supportsLineClamp()) {
+                const descriptions = document.querySelectorAll('.detail-list-text p');
+                descriptions.forEach(desc => {
+                    desc.style.display = '-webkit-box';
+                    desc.style.webkitLineClamp = '3';
+                    desc.style.webkitBoxOrient = 'vertical';
+                    desc.style.overflow = 'hidden';
+                    desc.style.maxHeight = 'none';
+                    
+                    // Enlever le gradient pour les navigateurs modernes
+                    desc.style.position = 'static';
+                });
+                
+                // Supprimer les pseudo-éléments after
+                const style = document.createElement('style');
+                style.textContent = `
+                    .detail-list-text p::after {
+                        display: none !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Garantir que les descriptions sont correctement limitées
+        document.addEventListener('DOMContentLoaded', function() {
+            // Attendre que les images soient chargées
+            setTimeout(function() {
+                const descriptions = document.querySelectorAll('.detail-list-text p');
+                
+                descriptions.forEach(function(desc) {
+                    // Vérifier si le texte dépasse
+                    if (desc.scrollHeight > desc.offsetHeight) {
+                        // S'assurer que les styles sont appliqués
+                        desc.style.display = '-webkit-box';
+                        desc.style.webkitLineClamp = '3';
+                        desc.style.webkitBoxOrient = 'vertical';
+                        desc.style.overflow = 'hidden';
+                        
+                        // Pour les navigateurs qui ne supportent pas line-clamp
+                        if (!('webkitLineClamp' in desc.style)) {
+                            desc.classList.add('fallback');
+                        }
+                    }
+                });
+            }, 500);
+        });
+
+        // Réappliquer après le redimensionnement
+        window.addEventListener('resize', function() {
+            const descriptions = document.querySelectorAll('.detail-list-text p');
+            descriptions.forEach(function(desc) {
+                desc.style.display = 'block';
+                
+                // Forcer le recalcul
+                void desc.offsetWidth;
+                
+                desc.style.display = '-webkit-box';
+            });
+        });
+
+        // Exécuter au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            applyLineClampIfSupported();
+            enforceTextLimits();
+        });
+
+        // Réexécuter après un délai pour s'assurer que tout est chargé
+        setTimeout(enforceTextLimits, 100);
+        setTimeout(enforceTextLimits, 500);
+        setTimeout(enforceTextLimits, 1000);
+    </script>
 </body>
 </html>
