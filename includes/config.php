@@ -36,7 +36,6 @@ define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
 
 // 4. Configuration des chemins d'images - Optimisée pour App Engine
-define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
 define('IMG_BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . '/assets/img/');
 define('IMG_BASE_URL', BASE_URL . 'assets/img/');
 
