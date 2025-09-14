@@ -30,6 +30,9 @@ if ($isAppEngine) {
     define('BASE_URL', $protocol . '://' . $host . '/');
 }
 
+// NE PAS redéfinir BASE_URL ici - SUPPRIMEZ cette ligne si elle existe
+// define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
+
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
 
@@ -100,6 +103,56 @@ function connectDB() {
     }
 }
 
+// ... (le reste des fonctions reste inchangé jusqu'à la fin)
+
+/* *************************** */
+/* INITIALISATION DU SYSTÈME   */
+/* *************************** */
+
+// Affichage des erreurs en mode dev
+if (DEV_MODE) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('log_errors', 1);
+    // Ne pas créer de répertoire de logs en production (système read-only)
+    ini_set('error_log', sys_get_temp_dir() . '/php_errors.log');
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    // Utiliser le répertoire temporaire pour les logs en production
+    ini_set('error_log', sys_get_temp_dir() . '/php_errors.log');
+}
+
+// Test de connexion DB (seulement en mode développement)
+if (DEV_MODE) {
+    try {
+        $db = connectDB();
+        $db->query("SELECT 1");
+        
+        // Connexion auto pour le développement
+        $_SESSION['user_id'] = 1;
+        $_SESSION['user_role'] = ROLE_ADMIN;
+        
+    } catch (PDOException $e) {
+        die("<h1>Configuration requise</h1>
+            <div class='alert alert-danger'>
+            <p>Impossible de se connecter à la base de données.</p>
+            <p><strong>Solution :</strong></p>
+            <ol>
+                <li>Vérifier que l'instance Cloud SQL est en cours d'exécution</li>
+                <li>Vérifier les paramètres de connexion (hôte, utilisateur, mot de passe)</li>
+                <li>Vérifier que la base de données existe</li>
+            </ol>
+            <pre>Erreur : {$e->getMessage()}</pre>
+            </div>");
+    }
+}
+
+// Fonction pour obtenir une connexion à la base de données (compatible avec l'ancien code)
+function getDBConnection() {
+    return connectDB();
+}
 /**
  * Nettoie les données utilisateur
  */
