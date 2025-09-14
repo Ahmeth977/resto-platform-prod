@@ -7,16 +7,26 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
+    - name: Google Auth
+      id: auth
+      uses: 'google-github-actions/auth@v1'
       with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    - name: Set up Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v1'
+      with:
+        project_id: '${{ secrets.GCP_PROJECT_ID }}'
 
     - name: Deploy to App Engine
-      run: gcloud app deploy app.yaml --quiet
+      run: |
+        gcloud config set app/cloud_build_timeout 1600
+        gcloud app deploy app.yaml --quiet --project=${{ secrets.GCP_PROJECT_ID }}
