@@ -2,6 +2,7 @@
 require_once __DIR__.'/includes/config.php';
 require_once __DIR__. '/includes/database.php';
 require_once __DIR__.'/includes/functions.php';
+
 $request_uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($request_uri, PHP_URL_PATH);
 
@@ -12,15 +13,40 @@ if ($path === '/' || $path === '/index.php') {
     // Inclure et exécuter restaurant.php
     include 'restaurant.php';
     exit;
-} elseif (preg_match('/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/', $path)) {
-    // Fichiers statiques - laisser Apache les servir
-    return false;
+} elseif (strpos($path, '/assets/') === 0) {
+    // Servir les fichiers statiques directement
+    $file_path = $_SERVER['DOCUMENT_ROOT'] . $path;
+    if (file_exists($file_path)) {
+        $mime_types = [
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'ico' => 'image/x-icon',
+            'svg' => 'image/svg+xml'
+        ];
+        
+        $extension = pathinfo($file_path, PATHINFO_EXTENSION);
+        if (array_key_exists($extension, $mime_types)) {
+            header('Content-Type: ' . $mime_types[$extension]);
+        }
+        
+        readfile($file_path);
+    } else {
+        http_response_code(404);
+        echo 'Fichier non trouvé';
+    }
+    exit;
 } else {
     // Page non trouvée
     http_response_code(404);
     echo 'Page non trouvée';
     exit;
 }
+
+// Le reste de votre code index.php...
 // Fonctions utilitaires
 function safeOutput($data, $maxLength = 255) {
     $data = trim($data);
@@ -1035,7 +1061,7 @@ try {
             <?php if(!empty($restaurants)): ?>
                 <?php foreach ($restaurants as $resto): ?>
                     <div class="resto-card">
-                        <a href="<?php echo getenv('BASE_URL'); ?>restaurant.php?id=1">" class="resto-card-link">
+                        <a href="<?php echo BASE_URL; ?>restaurant.php?id=<?= $resto['id'] ?>" class="resto-card-link">
                             <div class="resto-media">
                                 <img src="<?= getRestaurantImage($resto['id'], $resto['image_url']) ?>" 
                                      class="resto-img" 
