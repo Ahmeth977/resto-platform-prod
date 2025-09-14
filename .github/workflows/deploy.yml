@@ -7,26 +7,31 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
+    
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Google Auth
-      id: auth
-      uses: 'google-github-actions/auth@v1'
+    - name: Setup Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
       with:
-        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
 
-    - name: Set up Cloud SDK
-      uses: 'google-github-actions/setup-gcloud@v1'
-      with:
-        project_id: '${{ secrets.GCP_PROJECT_ID }}'
+    - name: Authenticate with Google Cloud
+      run: |
+        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Grant necessary permissions
+      run: |
+        gcloud iam service-accounts add-iam-policy-binding \
+          ${{ secrets.GCP_PROJECT_ID }}@appspot.gserviceaccount.com \
+          --member="serviceAccount:github-actions-deploy@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com" \
+          --role="roles/iam.serviceAccountUser"
 
     - name: Deploy to App Engine
       run: |
         gcloud config set app/cloud_build_timeout 1600
-        gcloud app deploy app.yaml --quiet --project=${{ secrets.GCP_PROJECT_ID }}
+        gcloud app deploy app.yaml --quiet
