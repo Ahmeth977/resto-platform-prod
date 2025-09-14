@@ -6,15 +6,8 @@ require_once __DIR__.'/includes/functions.php';
 $request_uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($request_uri, PHP_URL_PATH);
 
-// Router les requêtes
-if ($path === '/' || $path === '/index.php') {
-    // Page d'accueil - le reste du code index.php
-} elseif (strpos($path, '/restaurant.php') === 0) {
-    // Inclure et exécuter restaurant.php
-    include 'restaurant.php';
-    exit;
-} elseif (strpos($path, '/assets/') === 0) {
-    // Servir les fichiers statiques directement
+// Servir les fichiers statiques directement sans passer par le routeur
+if (preg_match('/\.(css|js|png|jpg|jpeg|gif|ico|svg|webp)$/', $path)) {
     $file_path = $_SERVER['DOCUMENT_ROOT'] . $path;
     if (file_exists($file_path)) {
         $mime_types = [
@@ -25,19 +18,30 @@ if ($path === '/' || $path === '/index.php') {
             'jpeg' => 'image/jpeg',
             'gif' => 'image/gif',
             'ico' => 'image/x-icon',
-            'svg' => 'image/svg+xml'
+            'svg' => 'image/svg+xml',
+            'webp' => 'image/webp'
         ];
         
         $extension = pathinfo($file_path, PATHINFO_EXTENSION);
         if (array_key_exists($extension, $mime_types)) {
             header('Content-Type: ' . $mime_types[$extension]);
+            header('Cache-Control: max-age=86400');
         }
         
         readfile($file_path);
+        exit;
     } else {
         http_response_code(404);
-        echo 'Fichier non trouvé';
+        exit;
     }
+}
+
+// Router les requêtes
+if ($path === '/' || $path === '/index.php') {
+    // Page d'accueil - le reste du code index.php
+} elseif (strpos($path, '/restaurant.php') === 0) {
+    // Inclure et exécuter restaurant.php
+    include 'restaurant.php';
     exit;
 } else {
     // Page non trouvée
@@ -45,7 +49,7 @@ if ($path === '/' || $path === '/index.php') {
     echo 'Page non trouvée';
     exit;
 }
-
+// ... le reste de votre code index.php
 // Le reste de votre code index.php...
 // Fonctions utilitaires
 function safeOutput($data, $maxLength = 255) {
