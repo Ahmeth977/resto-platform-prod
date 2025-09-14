@@ -21,15 +21,21 @@ jobs:
 
     - name: Authenticate with Google Cloud
       run: |
-        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+        # Créer le fichier de clé de service à partir du secret
+        echo '${{ secrets.GCP_SA_KEY }}' > service-account-key.json
+        
+        # Authentifier avec le compte de service
+        gcloud auth activate-service-account --key-file=service-account-key.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Grant necessary permissions
       run: |
+        # Accorder les permissions nécessaires au compte de service
         gcloud iam service-accounts add-iam-policy-binding \
           ${{ secrets.GCP_PROJECT_ID }}@appspot.gserviceaccount.com \
           --member="serviceAccount:github-actions-deploy@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com" \
-          --role="roles/iam.serviceAccountUser"
+          --role="roles/iam.serviceAccountUser" \
+          --quiet
 
     - name: Deploy to App Engine
       run: |
