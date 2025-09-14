@@ -117,7 +117,7 @@ if (!empty($restaurant['opening_hours'])) {
     
     <!-- CSS perso -->
     <link rel="stylesheet" href="<?= asset_url('css/nav.css') ?>">
-    <link rel="stylesheet" href="<?= asset_url('css/style.css') ?>">
+<link rel="stylesheet" href="<?= asset_url('css/style.css') ?>">
     
     <style>
 :root {
