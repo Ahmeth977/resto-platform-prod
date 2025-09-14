@@ -222,9 +222,13 @@ function getProductImage($productId, $imageUrl = null) {
 /**
  * Fonction pour les restaurants
  */
-function getRestaurantImage($restaurantId, $imageUrl = null) {
-    $basePath = IMG_BASE_PATH . 'restaurants/';
-    $baseUrl = IMG_BASE_URL . 'restaurants/';
+/**
+ * Fonction pour les produits - CORRIGÉE
+ */
+function getProductImage($productId, $imageUrl = null) {
+    // Chemins de base corrigés
+    $basePath = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/products/';
+    $baseUrl = BASE_URL . 'assets/img/products/';
     
     if ($imageUrl && !empty($imageUrl)) {
         if (strpos($imageUrl, 'http') === 0 || strpos($imageUrl, 'data:image') === 0) {
@@ -232,26 +236,26 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
         }
         
         $possiblePaths = [
-            $_SERVER['DOCUMENT_ROOT'] . $imageUrl,
-            IMG_BASE_PATH . basename($imageUrl),
+            $basePath . basename($imageUrl),
+            $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($imageUrl, '/'),
             $imageUrl
         ];
         
         foreach ($possiblePaths as $testPath) {
             if (file_exists($testPath) && is_file($testPath)) {
-                if (strpos($testPath, $_SERVER['DOCUMENT_ROOT']) === 0) {
-                    return str_replace($_SERVER['DOCUMENT_ROOT'], '', $testPath);
+                if (strpos($testPath, $basePath) !== false) {
+                    return $baseUrl . basename($imageUrl);
                 }
-                return $imageUrl;
+                return BASE_URL . ltrim($imageUrl, '/');
             }
         }
     }
     
     $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     foreach ($extensions as $ext) {
-        $imagePath = $basePath . $restaurantId . '.' . $ext;
+        $imagePath = $basePath . $productId . '.' . $ext;
         if (file_exists($imagePath)) {
-            return $baseUrl . $restaurantId . '.' . $ext;
+            return $baseUrl . $productId . '.' . $ext;
         }
     }
     
@@ -262,9 +266,8 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
         return $defaultImage;
     }
     
-    return 'https://via.placeholder.com/600x400/FF6B6B/ffffff?text=Restaurant+Non+Disponible';
+    return 'https://via.placeholder.com/400x300/4ECDC4/ffffff?text=Produit+Non+Disponible';
 }
-
 /**
  * Fonction pour uploader les images des produits
  */
