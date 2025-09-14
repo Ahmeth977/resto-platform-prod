@@ -6,14 +6,14 @@ define('ROLE_ADMIN', 'admin');
 define('ROLE_RESTAURATEUR', 'restaurateur');
 define('ROLE_CLIENT', 'client');
 
-// 2. Configuration BDD pour Google Cloud SQL
+// 2. Configuration BDD pour Google Cloud SQL - Utilisation des variables d'environnement
 $dbHost = getenv('DB_HOST') ?: '34.52.242.229';
 $dbName = getenv('DB_NAME') ?: 'resto_platform';
 $dbUser = getenv('DB_USER') ?: 'root';
 $dbPass = getenv('DB_PASS') ?: '781155609';
 $dbPort = getenv('DB_PORT') ?: 3306;
 
-// 3. Chemins système - Configuration CORRIGÉE
+// 3. Chemins système - Configuration optimisée pour Google App Engine
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
 
@@ -21,22 +21,21 @@ $host = $_SERVER['HTTP_HOST'];
 $isAppEngine = (getenv('GAE_APPLICATION') !== false);
 $isLocal = ($host === 'localhost' || $host === '127.0.0.1' || strpos($host, '.test') !== false);
 
-// CORRECTION IMPORTANTE: Utilisation du chemin racine correct
 if ($isAppEngine) {
     // Environnement Google App Engine en production
     define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
+} elseif ($isLocal) {
+    // Environnement de développement local
+    define('BASE_URL', $protocol . '://' . $host . '/');
 } else {
-    // Environnement de développement local ou autre
+    // Autres environnements (fallback)
     define('BASE_URL', $protocol . '://' . $host . '/');
 }
-
-// NE PAS redéfinir BASE_URL ici - SUPPRIMEZ cette ligne si elle existe
-// define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
 
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
 
-// 4. Configuration des chemins d'images
+// 4. Configuration des chemins d'images - Optimisée pour App Engine
 define('IMG_BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . '/assets/img/');
 define('IMG_BASE_URL', BASE_URL . 'assets/img/');
 
@@ -51,7 +50,7 @@ if (session_status() === PHP_SESSION_NONE) {
     $domain = $isAppEngine ? 'sencommandes.ew.r.appspot.com' : $host;
     
     session_set_cookie_params([
-        'lifetime' => 86400,
+        'lifetime' => 86400, // 24 heures
         'path' => '/',
         'domain' => $domain,
         'secure' => true,
@@ -103,56 +102,6 @@ function connectDB() {
     }
 }
 
-// ... (le reste des fonctions reste inchangé jusqu'à la fin)
-
-/* *************************** */
-/* INITIALISATION DU SYSTÈME   */
-/* *************************** */
-
-// Affichage des erreurs en mode dev
-if (DEV_MODE) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    ini_set('log_errors', 1);
-    // Ne pas créer de répertoire de logs en production (système read-only)
-    ini_set('error_log', sys_get_temp_dir() . '/php_errors.log');
-} else {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 0);
-    ini_set('log_errors', 1);
-    // Utiliser le répertoire temporaire pour les logs en production
-    ini_set('error_log', sys_get_temp_dir() . '/php_errors.log');
-}
-
-// Test de connexion DB (seulement en mode développement)
-if (DEV_MODE) {
-    try {
-        $db = connectDB();
-        $db->query("SELECT 1");
-        
-        // Connexion auto pour le développement
-        $_SESSION['user_id'] = 1;
-        $_SESSION['user_role'] = ROLE_ADMIN;
-        
-    } catch (PDOException $e) {
-        die("<h1>Configuration requise</h1>
-            <div class='alert alert-danger'>
-            <p>Impossible de se connecter à la base de données.</p>
-            <p><strong>Solution :</strong></p>
-            <ol>
-                <li>Vérifier que l'instance Cloud SQL est en cours d'exécution</li>
-                <li>Vérifier les paramètres de connexion (hôte, utilisateur, mot de passe)</li>
-                <li>Vérifier que la base de données existe</li>
-            </ol>
-            <pre>Erreur : {$e->getMessage()}</pre>
-            </div>");
-    }
-}
-
-// Fonction pour obtenir une connexion à la base de données (compatible avec l'ancien code)
-function getDBConnection() {
-    return connectDB();
-}
 /**
  * Nettoie les données utilisateur
  */
@@ -192,21 +141,17 @@ function redirect($url) {
 }
 
 /**
- * Génère une URL complète pour une ressource - CORRIGÉE
+ * Génère une URL complète pour une ressource
  */
 function asset_url($path) {
-    // Retirer le slash initial s'il existe
-    $path = ltrim($path, '/');
-    return BASE_URL . 'assets/' . $path;
+    return BASE_URL . 'assets/' . ltrim($path, '/');
 }
 
 /**
- * Génère une URL complète pour une image - CORRIGÉE
+ * Génère une URL complète pour une image
  */
 function image_url($path) {
-    // Retirer le slash initial s'il existe
-    $path = ltrim($path, '/');
-    return BASE_URL . 'assets/img/' . $path;
+    return BASE_URL . 'assets/img/' . ltrim($path, '/');
 }
 
 /**
@@ -445,3 +390,4 @@ if (DEV_MODE) {
 function getDBConnection() {
     return connectDB();
 }
+?>
