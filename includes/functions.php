@@ -29,28 +29,26 @@ function isAdmin() {
 
 /**
  * Fonction pour les produits - CORRIGÉE pour App Engine
+/**
+ * Fonction pour les produits - CORRIGÉE
  */
 function getProductImage($productId, $imageUrl = null) {
-    $basePath = IMG_BASE_PATH . 'products/';
-    $baseUrl = IMG_BASE_URL . 'products/';
+    $basePath = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/products/';
+    $baseUrl = BASE_URL . 'assets/img/products/';
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
-        // Si c'est déjà une URL complète
-        if (strpos($imageUrl, 'http') === 0 || strpos($imageUrl, 'data:image') === 0) {
-            return $imageUrl;
-        }
-        
-        // Vérifier si le fichier existe dans le dossier products
-        $testPath = $basePath . basename($imageUrl);
-        if (file_exists($testPath) && is_file($testPath)) {
-            return $baseUrl . basename($imageUrl);
-        }
-        
-        // Vérifier si le fichier existe à l'emplacement exact
-        $testPath = IMG_BASE_PATH . $imageUrl;
-        if (file_exists($testPath) && is_file($testPath)) {
-            return IMG_BASE_URL . $imageUrl;
+        // Si c'est un chemin relatif, le convertir en chemin absolu
+        if (strpos($imageUrl, 'http') !== 0 && strpos($imageUrl, 'data:image') !== 0) {
+            // Nettoyer le chemin
+            $cleanPath = ltrim($imageUrl, '/');
+            $testPath = $basePath . basename($cleanPath);
+            
+            if (file_exists($testPath)) {
+                return $baseUrl . basename($cleanPath);
+            }
+        } else {
+            return $imageUrl; // URL absolue
         }
     }
     
@@ -63,42 +61,30 @@ function getProductImage($productId, $imageUrl = null) {
         }
     }
     
-    // 3. Image par défaut du dossier
-    $defaultImage = $baseUrl . 'default.jpg';
-    $defaultPath = $basePath . 'default.jpg';
-    
-    if (file_exists($defaultPath)) {
-        return $defaultImage;
-    }
-    
-    // 4. Fallback vers placeholder
-    return 'https://via.placeholder.com/400x300/4ECDC4/ffffff?text=Produit+Non+Disponible';
+    // 3. Image par défaut
+    return $baseUrl . 'default.jpg';
 }
 
 /**
- * Fonction pour les restaurants - CORRIGÉE pour App Engine
+ * Fonction pour les restaurants - CORRIGÉE
  */
 function getRestaurantImage($restaurantId, $imageUrl = null) {
-    $basePath = IMG_BASE_PATH . 'restaurants/';
-    $baseUrl = IMG_BASE_URL . 'restaurants/';
+    $basePath = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/restaurants/';
+    $baseUrl = BASE_URL . 'assets/img/restaurants/';
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
-        // Si c'est déjà une URL complète
-        if (strpos($imageUrl, 'http') === 0 || strpos($imageUrl, 'data:image') === 0) {
-            return $imageUrl;
-        }
-        
-        // Vérifier si le fichier existe dans le dossier restaurants
-        $testPath = $basePath . basename($imageUrl);
-        if (file_exists($testPath) && is_file($testPath)) {
-            return $baseUrl . basename($imageUrl);
-        }
-        
-        // Vérifier si le fichier existe à l'emplacement exact
-        $testPath = IMG_BASE_PATH . $imageUrl;
-        if (file_exists($testPath) && is_file($testPath)) {
-            return IMG_BASE_URL . $imageUrl;
+        // Si c'est un chemin relatif, le convertir en chemin absolu
+        if (strpos($imageUrl, 'http') !== 0 && strpos($imageUrl, 'data:image') !== 0) {
+            // Nettoyer le chemin
+            $cleanPath = ltrim($imageUrl, '/');
+            $testPath = $basePath . basename($cleanPath);
+            
+            if (file_exists($testPath)) {
+                return $baseUrl . basename($cleanPath);
+            }
+        } else {
+            return $imageUrl; // URL absolue
         }
     }
     
@@ -111,18 +97,9 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
         }
     }
     
-    // 3. Image par défaut du dossier
-    $defaultImage = $baseUrl . 'default.jpg';
-    $defaultPath = $basePath . 'default.jpg';
-    
-    if (file_exists($defaultPath)) {
-        return $defaultImage;
-    }
-    
-    // 4. Fallback vers placeholder
-    return 'https://via.placeholder.com/600x400/FF6B6B/ffffff?text=Restaurant+Non+Disponible';
+    // 3. Image par défaut
+    return $baseUrl . 'default.jpg';
 }
-/**
  * Fonction pour uploader les images des produits
  */
 function handleProductImageUpload($fileInputName, $currentImage = null) {
