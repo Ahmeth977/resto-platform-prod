@@ -1,6 +1,15 @@
 RewriteEngine On
 
-# Rediriger tout vers index.php sauf les fichiers existants
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+# Ne pas réécrire les requêtes pour les fichiers existants
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Ne pas réécrire les requêtes pour les dossiers existants
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Ne pas réécrire les requêtes pour les assets (CSS, JS, images, etc.)
+RewriteRule ^assets/ - [L]
+
+# Rediriger toutes les autres requêtes vers index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
