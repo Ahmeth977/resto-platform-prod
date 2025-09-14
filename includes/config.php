@@ -6,14 +6,14 @@ define('ROLE_ADMIN', 'admin');
 define('ROLE_RESTAURATEUR', 'restaurateur');
 define('ROLE_CLIENT', 'client');
 
-// 2. Configuration BDD pour Google Cloud SQL - Utilisation des variables d'environnement
+// 2. Configuration BDD pour Google Cloud SQL
 $dbHost = getenv('DB_HOST') ?: '34.52.242.229';
 $dbName = getenv('DB_NAME') ?: 'resto_platform';
 $dbUser = getenv('DB_USER') ?: 'root';
 $dbPass = getenv('DB_PASS') ?: '781155609';
 $dbPort = getenv('DB_PORT') ?: 3306;
 
-// 3. Chemins système - Configuration optimisée pour Google App Engine
+// 3. Chemins système - Configuration CORRIGÉE
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
 
@@ -21,21 +21,19 @@ $host = $_SERVER['HTTP_HOST'];
 $isAppEngine = (getenv('GAE_APPLICATION') !== false);
 $isLocal = ($host === 'localhost' || $host === '127.0.0.1' || strpos($host, '.test') !== false);
 
+// CORRECTION IMPORTANTE: Utilisation du chemin racine correct
 if ($isAppEngine) {
     // Environnement Google App Engine en production
     define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
-} elseif ($isLocal) {
-    // Environnement de développement local
-    define('BASE_URL', $protocol . '://' . $host . '/');
 } else {
-    // Autres environnements (fallback)
+    // Environnement de développement local ou autre
     define('BASE_URL', $protocol . '://' . $host . '/');
 }
 
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
 
-// 4. Configuration des chemins d'images - Optimisée pour App Engine
+// 4. Configuration des chemins d'images
 define('IMG_BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . '/assets/img/');
 define('IMG_BASE_URL', BASE_URL . 'assets/img/');
 
@@ -50,7 +48,7 @@ if (session_status() === PHP_SESSION_NONE) {
     $domain = $isAppEngine ? 'sencommandes.ew.r.appspot.com' : $host;
     
     session_set_cookie_params([
-        'lifetime' => 86400, // 24 heures
+        'lifetime' => 86400,
         'path' => '/',
         'domain' => $domain,
         'secure' => true,
@@ -141,17 +139,21 @@ function redirect($url) {
 }
 
 /**
- * Génère une URL complète pour une ressource
+ * Génère une URL complète pour une ressource - CORRIGÉE
  */
 function asset_url($path) {
-    return BASE_URL . 'assets/' . ltrim($path, '/');
+    // Retirer le slash initial s'il existe
+    $path = ltrim($path, '/');
+    return BASE_URL . 'assets/' . $path;
 }
 
 /**
- * Génère une URL complète pour une image
+ * Génère une URL complète pour une image - CORRIGÉE
  */
 function image_url($path) {
-    return BASE_URL . 'assets/img/' . ltrim($path, '/');
+    // Retirer le slash initial s'il existe
+    $path = ltrim($path, '/');
+    return BASE_URL . 'assets/img/' . $path;
 }
 
 /**
@@ -390,4 +392,3 @@ if (DEV_MODE) {
 function getDBConnection() {
     return connectDB();
 }
-?>
