@@ -32,6 +32,9 @@ if ($isAppEngine) {
     define('BASE_URL', $protocol . '://' . $host . '/');
 }
 
+// SUPPRIMEZ CETTE LIGNE QUI CAUSE LE DOUBLON :
+// define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
+
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
 
@@ -60,6 +63,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// ... (le reste du code reste inchangé)
 /* *************************** */
 /* FONCTIONS PRINCIPALES       */
 /* *************************** */
