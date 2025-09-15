@@ -36,7 +36,7 @@
                     <a class="nav-link active" href="index.php" style="color: #333 !important;">Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php" style="color: #333 !important;">Restaurants</a>
+                    <a class="nav-link" href="<?= BASE_URL ? style="color: #333 !important;">Restaurants</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="apropos.php" style="color: #333 !important;">À propos</a>
