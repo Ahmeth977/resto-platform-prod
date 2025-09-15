@@ -1,11 +1,8 @@
 <?php
 // functions.php - Version corrigée pour le déploiement
 
-// Ne plus redéfinir les constantes qui sont déjà dans config.php
-// Utiliser directement les constantes définies dans config.php
-
 /**
- * Fonction pour vérifier les autorisations - CORRIGÉE
+ * Fonction pour vérifier les autorisations
  */
 function checkAdminAccess() {
     if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== ROLE_ADMIN) {
@@ -22,14 +19,6 @@ function isAdmin() {
 }
 
 /**
- * Fonction pour les produits - OPTIMISÉE
- */
-
-// functions.php - Version corrigée
-
-/**
- * Fonction pour les produits - CORRIGÉE pour App Engine
-/**
  * Fonction pour les produits - CORRIGÉE
  */
 function getProductImage($productId, $imageUrl = null) {
@@ -38,17 +27,24 @@ function getProductImage($productId, $imageUrl = null) {
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
-        // Si c'est un chemin relatif, le convertir en chemin absolu
-        if (strpos($imageUrl, 'http') !== 0 && strpos($imageUrl, 'data:image') !== 0) {
-            // Nettoyer le chemin
-            $cleanPath = ltrim($imageUrl, '/');
-            $testPath = $basePath . basename($cleanPath);
-            
-            if (file_exists($testPath)) {
-                return $baseUrl . basename($cleanPath);
-            }
-        } else {
-            return $imageUrl; // URL absolue
+        // Si c'est une URL complète, la retourner directement
+        if (strpos($imageUrl, 'http') === 0 || strpos($imageUrl, 'data:image') === 0) {
+            return $imageUrl;
+        }
+        
+        // Si c'est un chemin relatif, vérifier s'il existe
+        $cleanPath = ltrim($imageUrl, '/');
+        
+        // Vérifier si le fichier existe dans le dossier products
+        $testPath = $basePath . basename($cleanPath);
+        if (file_exists($testPath)) {
+            return $baseUrl . basename($cleanPath);
+        }
+        
+        // Vérifier si le fichier existe à l'emplacement exact
+        $exactPath = $_SERVER['DOCUMENT_ROOT'] . $imageUrl;
+        if (file_exists($exactPath)) {
+            return BASE_URL . ltrim($imageUrl, '/');
         }
     }
     
@@ -62,7 +58,14 @@ function getProductImage($productId, $imageUrl = null) {
     }
     
     // 3. Image par défaut
-    return $baseUrl . 'default.jpg';
+    $defaultImage = $baseUrl . 'default.jpg';
+    $defaultPath = $basePath . 'default.jpg';
+    
+    if (file_exists($defaultPath)) {
+        return $defaultImage;
+    }
+    
+    return 'https://via.placeholder.com/400x300/4ECDC4/ffffff?text=Produit+Non+Disponible';
 }
 
 /**
@@ -74,17 +77,24 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     
     // 1. Vérifier l'image personnalisée d'abord
     if ($imageUrl && !empty($imageUrl)) {
-        // Si c'est un chemin relatif, le convertir en chemin absolu
-        if (strpos($imageUrl, 'http') !== 0 && strpos($imageUrl, 'data:image') !== 0) {
-            // Nettoyer le chemin
-            $cleanPath = ltrim($imageUrl, '/');
-            $testPath = $basePath . basename($cleanPath);
-            
-            if (file_exists($testPath)) {
-                return $baseUrl . basename($cleanPath);
-            }
-        } else {
-            return $imageUrl; // URL absolue
+        // Si c'est une URL complète, la retourner directement
+        if (strpos($imageUrl, 'http') === 0 || strpos($imageUrl, 'data:image') === 0) {
+            return $imageUrl;
+        }
+        
+        // Si c'est un chemin relatif, vérifier s'il existe
+        $cleanPath = ltrim($imageUrl, '/');
+        
+        // Vérifier si le fichier existe dans le dossier restaurants
+        $testPath = $basePath . basename($cleanPath);
+        if (file_exists($testPath)) {
+            return $baseUrl . basename($cleanPath);
+        }
+        
+        // Vérifier si le fichier existe à l'emplacement exact
+        $exactPath = $_SERVER['DOCUMENT_ROOT'] . $imageUrl;
+        if (file_exists($exactPath)) {
+            return BASE_URL . ltrim($imageUrl, '/');
         }
     }
     
@@ -98,8 +108,17 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
     }
     
     // 3. Image par défaut
-    return $baseUrl . 'default.jpg';
+    $defaultImage = $baseUrl . 'default.jpg';
+    $defaultPath = $basePath . 'default.jpg';
+    
+    if (file_exists($defaultPath)) {
+        return $defaultImage;
+    }
+    
+    return 'https://via.placeholder.com/600x400/FF6B6B/ffffff?text=Restaurant+Non+Disponible';
 }
+
+/**
  * Fonction pour uploader les images des produits
  */
 function handleProductImageUpload($fileInputName, $currentImage = null) {
@@ -117,7 +136,7 @@ function handleRestaurantImageUpload($fileInputName, $currentImage = null) {
  * Fonction générique pour uploader les images - CORRIGÉE
  */
 function handleImageUpload($fileInputName, $type = 'products', $currentImage = null) {
-    $basePath = IMG_BASE_PATH . $type . '/';
+    $basePath = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/' . $type . '/';
     
     // Créer le dossier s'il n'existe pas
     if (!file_exists($basePath)) {
@@ -127,8 +146,8 @@ function handleImageUpload($fileInputName, $type = 'products', $currentImage = n
     // Supprimer l'ancienne image si elle existe
     if ($currentImage && !empty($currentImage)) {
         // Nettoyer le chemin de l'image
-        $imagePath = str_replace(IMG_BASE_URL, '', $currentImage);
-        $fullPath = IMG_BASE_PATH . $imagePath;
+        $imagePath = str_replace(BASE_URL, '', $currentImage);
+        $fullPath = $_SERVER['DOCUMENT_ROOT'] . '/' . $imagePath;
         
         if (file_exists($fullPath) && is_file($fullPath)) {
             unlink($fullPath);
@@ -154,39 +173,10 @@ function handleImageUpload($fileInputName, $type = 'products', $currentImage = n
     $destination = $basePath . $filename;
     
     if (move_uploaded_file($_FILES[$fileInputName]['tmp_name'], $destination)) {
-        return IMG_BASE_URL . $type . '/' . $filename;
+        return BASE_URL . 'assets/img/' . $type . '/' . $filename;
     }
     
     return null;
-}
-
-/**
- * Fonction de debug pour vérifier les chemins - OPTIMISÉE
- */
-function debugImagePaths() {
-    if (!defined('DEV_MODE') || !DEV_MODE) {
-        return; // Seulement en mode développement
-    }
-    
-    echo "<h3>Debug des chemins d'images</h3>";
-    echo "IMG_BASE_PATH: " . IMG_BASE_PATH . "<br>";
-    echo "IMG_BASE_URL: " . IMG_BASE_URL . "<br>";
-    echo "DOCUMENT_ROOT: " . $_SERVER['DOCUMENT_ROOT'] . "<br>";
-    
-    // Vérifier l'existence des dossiers
-    $types = ['products', 'restaurants'];
-    foreach ($types as $type) {
-        $path = IMG_BASE_PATH . $type . '/';
-        echo "Dossier $type: " . (is_dir($path) ? "EXISTE" : "MANQUANT") . " ($path)<br>";
-        
-        // Lister les fichiers dans le dossier
-        if (is_dir($path)) {
-            $files = scandir($path);
-            echo "Fichiers dans $type: " . implode(', ', array_filter($files, function($file) {
-                return $file !== '.' && $file !== '..';
-            })) . "<br>";
-        }
-    }
 }
 
 /**
@@ -206,7 +196,4 @@ function getMenuImageUrl($imageUrl, $updatedAt = null) {
     $timestamp = $updatedAt ? strtotime($updatedAt) : time();
     return $imageUrl . (strpos($imageUrl, '?') === false ? '?' : '&') . 'v=' . $timestamp;
 }
-
-// Note: La fonction pour afficher les articles du panier n'est pas définie dans le code fourni
-// Vous devrez l'implémenter séparément
 ?>
