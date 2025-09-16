@@ -5,7 +5,7 @@
 define('ROLE_ADMIN', 'admin');
 define('ROLE_RESTAURATEUR', 'restaurateur');
 define('ROLE_CLIENT', 'client');
-
+require_once __DIR__ . '/image-functions.php';
 // 2. Configuration BDD pour Google Cloud SQL
 $dbHost = getenv('DB_HOST') ?: '34.52.242.229';
 $dbName = getenv('DB_NAME') ?: 'resto_platform';
