@@ -36,19 +36,21 @@ if (preg_match('/\.(css|js|png|jpg|jpeg|gif|ico|svg|webp)$/', $path)) {
     }
 }
 
-// Router les requêtes
-if ($path === '/' || $path === '/index.php') {
-    // Page d'accueil - le reste du code index.php
-} elseif (strpos($path, '/restaurant.php') === 0) {
-    // Inclure et exécuter restaurant.php
-    include 'restaurant.php';
-    exit;
-} else {
-    // Page non trouvée
-    http_response_code(404);
-    echo 'Page non trouvée';
-    exit;
+// Si ce n'est pas la racine, laisser App Engine servir le fichier directement
+if ($path !== '/' && $path !== '/index.php') {
+    // Vérifier si le fichier PHP existe
+    $php_file = __DIR__ . $path;
+    if (file_exists($php_file) && is_file($php_file)) {
+        // Inclure le fichier PHP demandé
+        require_once $php_file;
+        exit;
+    } else {
+        http_response_code(404);
+        echo 'Page non trouvée';
+        exit;
+    }
 }
+
 // ... le reste de votre code index.php
 // Le reste de votre code index.php...
 // Fonctions utilitaires
