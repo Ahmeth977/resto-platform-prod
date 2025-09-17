@@ -45,7 +45,7 @@ if (session_status() === PHP_SESSION_NONE) {
         'lifetime' => 86400,
         'path' => '/',
         'secure' => !DEV_MODE, // seulement en HTTPS en production
-        'httponly' => true,
+        'httponly' => false,
         'samesite' => 'Strict'
     ]);
     session_start();
