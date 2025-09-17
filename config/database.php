@@ -8,19 +8,19 @@ class Database {
     public $conn;
 
     public function __construct() {
-        // FORCER l'utilisation de l'IP publique
-        $this->host = getenv('DB_HOST') ?: '34.52.242.229';
-        $this->db_name = getenv('DB_NAME') ?: 'resto_platform';
-        $this->username = getenv('DB_USER') ?: 'root';
-        $this->password = getenv('DB_PASS') ?: '781155609';
-        $this->port = 3306; // Port MySQL standard
+        // VALEURS FIXES - PAS de getenv() !
+        $this->host = '34.52.242.229';
+        $this->db_name = 'resto_platform';
+        $this->username = 'root';
+        $this->password = '781155609';
+        $this->port = 3306;
     }
 
     public function getConnection() {
         $this->conn = null;
         
         try {
-            // Connexion TCP/IP forcée - IMPORTANT: pas de socket Unix!
+            // Connexion TCP/IP forcée
             $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->db_name};charset=utf8";
             
             $this->conn = new PDO($dsn, $this->username, $this->password, [

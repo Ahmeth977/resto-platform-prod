@@ -13,6 +13,7 @@ $dbUser = getenv('DB_USER') ?: 'root';
 $dbPass = getenv('DB_PASS') ?: '781155609';
 $dbPort = getenv('DB_PORT') ?: 3306;
 
+<<<<<<< Updated upstream
 // 3. Chemins système - Configuration CORRIGÉE
 $isAppEngine = (getenv('GAE_APPLICATION') !== false);
 $isLocal = (getenv('GAE_APPLICATION') === false);
@@ -27,12 +28,25 @@ if ($isAppEngine) {
     define('BASE_URL', $protocol . '://' . $host . '/');
 }
 
+=======
+// 2. Configuration BDD - CORRIGÉ !
+define('DB_HOST', '34.52.242.229'); 
+define('DB_NAME', 'resto_platform');
+define('DB_USER', 'root');
+define('DB_PASS', '781155609');
+define('DB_CHARSET', 'utf8mb4');
+
+// 3. Chemins système - CORRIGÉ !
+define('ROOT_PATH', dirname(__DIR__));
+define('BASE_URL', 'https://sencommandes.ew.r.appspot.com/');
+>>>>>>> Stashed changes
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('ROOT_PATH', dirname(__DIR__));
 
 // 4. Configuration des chemins d'images
 define('IMG_BASE_URL', BASE_URL . 'assets/img/');
 
+<<<<<<< Updated upstream
 // 5. Fuseau horaire du Sénégal
 date_default_timezone_set('Africa/Dakar');
 
@@ -217,3 +231,15 @@ if (DEV_MODE) {
 function getDBConnection() {
     return connectDB();
 }
+=======
+// 4. Configuration des chemins d'images
+define('IMG_BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . '/assets/img/');
+define('IMG_BASE_URL', '/assets/img/'); 
+
+// 5. Fuseau horaire du Sénégal
+date_default_timezone_set('Africa/Dakar');
+
+// 6. Mode Développement (true = dev, false = production)
+define('DEV_MODE', false);
+?>
+>>>>>>> Stashed changes

@@ -2,10 +2,11 @@ runtime: php82
 service: default
 
 env_variables:
-  DB_HOST: "34.52.242.229"
+  DB_HOST: "34.52.242.229"  # IP publique
   DB_NAME: "resto_platform"
   DB_USER: "root"
   DB_PASS: "781155609"
+<<<<<<< Updated upstream
   BASE_URL: "https://sencommandes.ew.r.appspot.com/"
   IMG_BASE_PATH: "assets/img/"
 
@@ -52,3 +53,11 @@ health_check:
   timeout_sec: 4
   unhealthy_threshold: 2
   healthy_threshold: 2
+=======
+  DISPLAY_ERRORS: "On"
+
+handlers:
+- url: /.*
+  script: auto
+  secure: always
+>>>>>>> Stashed changes
