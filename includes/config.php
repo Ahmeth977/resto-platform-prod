@@ -37,7 +37,7 @@ define('IMG_BASE_URL', BASE_URL . 'assets/img/');
 date_default_timezone_set('Africa/Dakar');
 
 // 6. Mode Développement - détection automatique
-define('DEV_MODE', $isLocal);
+define('DEV_MODE', false);
 
 // 7. Démarrer la session avec configuration sécurisée
 if (session_status() === PHP_SESSION_NONE) {
@@ -45,7 +45,7 @@ if (session_status() === PHP_SESSION_NONE) {
         'lifetime' => 86400,
         'path' => '/',
         'secure' => !DEV_MODE, // seulement en HTTPS en production
-        'httponly' => false,
+        'httponly' => true,
         'samesite' => 'Strict'
     ]);
     session_start();
@@ -203,12 +203,12 @@ function getRestaurantImage($restaurantId, $imageUrl = null) {
 // Affichage des erreurs en mode dev
 if (DEV_MODE) {
     error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    ini_set('log_errors', 1);
+    ini_set('display_errors', O);
+    ini_set('log_errors', 0);
     ini_set('error_log', ROOT_PATH . '/logs/php_errors.log');
 } else {
     error_reporting(E_ALL);
-    ini_set('display_errors', 0);
+    ini_set('display_errors', 1);
     ini_set('log_errors', 1);
     ini_set('error_log', ROOT_PATH . '/logs/php_errors.log');
 }
