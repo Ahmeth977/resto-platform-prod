@@ -126,7 +126,11 @@ if (!empty($restaurant['opening_hours'])) {
     
     <!-- CSS perso -->
     <link rel="stylesheet" href="<?= asset_url('css/nav.css') ?>">
+<<<<<<< Updated upstream
     <link rel="stylesheet" href="<?= asset_url('css/style.css') ?>">
+=======
+<link rel="stylesheet" href="<?= asset_url('css/style.css') ?>">
+>>>>>>> Stashed changes
     
     <style>
     :root {
@@ -546,6 +550,7 @@ if (!empty($restaurant['opening_hours'])) {
         color: white;
     }
 
+<<<<<<< Updated upstream
     /* Horaires */
     .opening-hours {
         background: white;
@@ -1068,6 +1073,30 @@ if (!empty($restaurant['opening_hours'])) {
         white-space: nowrap;
         max-width: 120px;
     }
+
+.navbar {
+    background: rgba(33, 37, 41, 0.98) !important;
+    backdrop-filter: blur(10px);
+}
+/* Désactiver complètement l'effet de scroll */
+.navbar, .navbar.scrolled {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    backdrop-filter: none !important;
+    padding: 0.5rem 0 !important;
+    transition: none !important;
+}
+/* Fallback pour les images manquantes */
+.fallback-img {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-weight: 500;
+    text-align: center;
+    padding: 10px;
+}
+ Stashed changes
     </style>
 </head>
 <body>
@@ -1075,8 +1104,19 @@ if (!empty($restaurant['opening_hours'])) {
     
     <!-- Bannière publicitaire agrandie -->
     <div class="ad-banner">
+<<<<<<< Updated upstream
     <img src="<?= asset_url('img/ad-banner.png') ?>" alt="Publicité" class="img-fluid">
     </div>
+=======
+    <?php
+    $bannerPath = __DIR__.'/img/ad-banner.png';
+    if (file_exists($bannerPath)): ?>
+        <img src="<?= asset_url('img/ad-banner.png') ?>" alt="Publicité" class="img-fluid" onerror="this.parentElement.innerHTML='Bannière Publicitaire Restaurant';">
+    <?php else: ?>
+        Bannière Publicitaire Restaurant
+    <?php endif; ?>
+</div>
+ Stashed changes
 
     <main class="container mb-5">
         <!-- Section informations restaurant avec image réduite -->
@@ -1084,14 +1124,21 @@ if (!empty($restaurant['opening_hours'])) {
             <div class="row g-0">
                 <!-- Image du restaurant (réduite) -->
                 <div class="col-md-5 restaurant-image-container">
-                    <img src="<?= $restaurant['image_url'] ?>" alt="<?= htmlspecialchars($restaurant['name']) ?>" class="restaurant-image">
-                </div>
+    <?php
+    $restaurantImage = !empty($restaurant['image_url']) ? $restaurant['image_url'] : '';
+    if (filter_var($restaurantImage, FILTER_VALIDATE_URL) === false && !empty($restaurantImage)) {
+        // C'est probablement un chemin local
+        $restaurantImage = asset_url($restaurantImage);
+    }
+    ?>
+    <img src="<?= $restaurantImage ?>" alt="<?= htmlspecialchars($restaurant['name']) ?>" class="restaurant-image" 
+         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjRkY2QjZCIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmYiPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg=='; this.alt='Image du restaurant non disponible'; this.classList.add('fallback-img');">
+</div>
                 
                 <!-- Informations du restaurant -->
                 <div class="col-md-7 restaurant-details">
                     <h1 class="restaurant-name"><?= htmlspecialchars($restaurant['name']) ?></h1>
-                    <p class="restaurant-description"><?= htmlspecialchars($restaurant['description']) ?></p>
-                    
+                    <p class="restaurant-description"><?= htmlspecialchars($restaurant['description'] ?? 'Description non disponible') ?></p>
                     <div class="restaurant-contact">
                         <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
@@ -1163,9 +1210,9 @@ if (!empty($restaurant['opening_hours'])) {
         <div class="row">
             <div class="col-lg-12">
                 <div class="resttabs">
-                    <a href="#" class="active" id="menu_link"><button class="btn res-menu">Commande En ligne</button></a>
-                    <a href="#" id="overview_link"><button class="btn overview_link">À propos</button></a>
-                    <a href="#" id="review_link"><button class="btn res-review">Avis et notes</button></a>
+                    <a href="" class="active" id="menu_link"><button class="btn res-menu">Commande En ligne</button></a>
+                    <a href="" id="overview_link"><button class="btn overview_link">À propos</button></a>
+                    <a href="" id="review_link"><button class="btn res-review">Avis et notes</button></a>
                 </div>
             </div>
         </div>
@@ -1181,7 +1228,7 @@ if (!empty($restaurant['opening_hours'])) {
                         <span class="navbar-brand fw-bold">Catégories :</span>
                         <div class="d-flex flex-wrap gap-2">
                             <?php foreach($categories as $category): ?>
-                            <a class="btn btn-sm btn-outline-dark" href="#<?= urlencode($category['name']) ?>">
+                            <a class="btn btn-sm btn-outline-dark" href="<?= urlencode($category['name']) ?>">
                                 <?= htmlspecialchars($category['name']) ?> (<?= $category['count'] ?>)
                             </a>
                             <?php endforeach; ?>
@@ -1220,6 +1267,7 @@ if (!empty($restaurant['opening_hours'])) {
                 }
                 ?>
 
+<<<<<<< Updated upstream
                 <p><?= htmlspecialchars(substr($menu['description'], 0, $maxLength)) ?><?= strlen($menu['description']) > $maxLength ? '...' : '' ?></p>
                                 <strong><?= number_format($menu['price'], 2) ?> CFA</strong>
                             </div>
@@ -1238,6 +1286,262 @@ if (!empty($restaurant['opening_hours'])) {
                     </div>
                 </div>
                 <?php endforeach; ?>
+=======
+<!-- Menus par catégorie -->
+
+    <!-- Menus par catégorie -->
+<?php if(!empty($categories)): ?>
+    <?php foreach($categories as $category): ?>
+    <section id="<?= urlencode($category['name']) ?>" class="mb-5">
+        <h2 class="mb-4">
+            <i class="fas fa-tag me-2 text-primary"></i>
+            <?= htmlspecialchars($category['name']) ?>
+        </h2>
+        
+        <div class="detail-list-box-main">
+        <?php foreach($category['items'] as $menu): ?>
+<div class="detail-list-box">
+    <div class="detail-list">
+        <div class="detail-list-img">
+        <div class="list-img">
+    <?php
+    $menuImage = !empty($menu['image_url']) ? $menu['image_url'] : '';
+    if (filter_var($menuImage, FILTER_VALIDATE_URL) === false && !empty($menuImage)) {
+        // C'est probablement un chemin local
+        $menuImage = asset_url($menuImage);
+    }
+    ?>
+    <img src="<?= $menuImage ?>" 
+         alt="<?= htmlspecialchars($menu['name']) ?>"
+         loading="lazy"
+         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEVDREM0Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmYiPlByb2R1aXQgbm9uIGRpc3BvbmlibGU8L3RleHQ+PC9zdmc+'; this.alt='Image non disponible'; this.classList.add('fallback-img');">
+</div>
+        </div>
+        <div class="detail-list-content">
+            <div class="detail-list-text">
+                <h3><?= htmlspecialchars($menu['name']) ?></h3>
+                <!-- TEXTE TRONQUÉ COMME DANS L'ADMIN -->
+              <?php  $maxLength = 100; // Par défaut
+if (preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $_SERVER['HTTP_USER_AGENT'])) {
+    $maxLength = 80; // Plus court sur mobile
+}
+?>
+
+<p><?= htmlspecialchars(substr($menu['description'], 0, $maxLength)) ?><?= strlen($menu['description']) > $maxLength ? '...' : '' ?></p>
+                <strong><?= number_format($menu['price'], 2) ?> CFA</strong>
+            </div>
+            <div class="add-btn">
+                <button type="button" class="btn-add" 
+                        data-id="<?= $menu['id'] ?>"
+                        data-name="<?= htmlspecialchars($menu['name']) ?>"
+                        data-description="<?= htmlspecialchars($menu['description']) ?>"
+                        data-price="<?= $menu['price'] ?>"
+                        data-image="<?= getProductImage($menu['id'], $menu['image_url']) ?>">
+                    <i class="fas fa-eye me-1"></i>Voir détails
+                </button>
+                <span class="cust"><?= rand(5, 20) ?> commandes</span>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endforeach; ?>
+        </div>
+    </section>
+    <?php endforeach; ?>
+<?php endif; ?>
+    
+
+<!-- ... suite du code ... -->
+        <!-- ... suite du code ... -->
+           
+            <!-- Colonne du panier -->
+            
+            <div class="col-sm-12 col-md-4 your_cart-c" id="your_cart">
+            <div class="your-cart-main">
+    <div class="your-cart-title">
+        <h3><i class="fas fa-shopping-cart"></i>Votre panier</h3>
+        <h6 id="cart-items-count">0 Articles</h6>
+    </div>
+    
+    <div id="cart-empty" class="cart-empty text-center">
+    <div style="width: 120px; height: 120px; background: #f1f1f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+        <i class="fas fa-shopping-cart" style="font-size: 50px; color: #666;"></i>
+    </div>
+    <h6>Votre panier est vide. <br> Veuillez ajouter quelques plats pour continuer.</h6>
+</div>
+    
+    <div id="cart-items-container" style="display: none;">
+        <div class="cart-items-list mb-3"></div>
+        
+        <div class="cart-summary">
+            <div class="d-flex justify-content-between mb-2">
+                <span>Sous-total:</span>
+                <span id="cart-subtotal">0 CFA</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Frais de livraison:</span>
+                <span id="cart-delivery">1000 CFA</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+                <span>Total:</span>
+                <span id="cart-total">0 CFA</span>
+            </div>
+            
+            <button id="continue-button" class="btn btn-primary w-100 py-2" onclick="proceedToCheckout()">
+                Continuer la commande
+            </button>
+        </div>
+    </div>
+    
+    <div class="min_order_txt mt-3">
+        <p>La commande minimum doit être de 500 FCFA pour éviter des frais de livraison supplémentaires</p>
+    </div>
+</div>
+            <!-- Onglet À propos -->
+<div class="col-sm-12" id="overview" style="display: none;">
+    <div class="detail-list-box-main">
+        <div class="heading-title">
+            <h2>À propos du restaurant</h2>
+        </div>
+        
+        <div class="mb-4">
+    <?= nl2br(htmlspecialchars($restaurant['description'] ?? 'Description non disponible')) ?>
+</div>
+        
+        <!-- Horaires d'ouverture -->
+        <div class="opening-hours">
+            <h3><i class="fas fa-clock me-2"></i>Horaires d'ouverture</h3>
+            <ul>
+                <?php foreach($openingHours as $hour): ?>
+                <li>
+                    <span><?= $hour['day'] ?></span>
+                    <span><?= $hour['hours'] ?></span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        
+        <!-- Informations de contact -->
+        <div class="opening-hours">
+            <h3><i class="fas fa-info-circle me-2"></i>Informations</h3>
+            <ul>
+                <li>
+                    <span><i class="fas fa-map-marker-alt me-2"></i>Adresse</span>
+                    <span><?= htmlspecialchars($restaurant['address']) ?></span>
+                </li>
+                <?php if(!empty($restaurant['phone'])): ?>
+                <li>
+                    <span><i class="fas fa-phone me-2"></i>Téléphone</span>
+                    <span><?= htmlspecialchars($restaurant['phone']) ?></span>
+                </li>
+                <?php endif; ?>
+                <?php if(!empty($restaurant['email'])): ?>
+                <li>
+                    <span><i class="fas fa-envelope me-2"></i>Email</span>
+                    <span><?= htmlspecialchars($restaurant['email']) ?></span>
+                </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Onglet Avis et notes -->
+<div class="col-sm-12" id="review" style="display: none;">
+    <div class="detail-list-box-main">
+        <div class="heading-title">
+            <h2>Avis et notes</h2>
+        </div>
+        
+        <!-- Résumé des notes -->
+        <div class="opening-hours mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Note moyenne</h3>
+                    <div class="display-4 text-primary fw-bold">
+                        <?= number_format($restaurant['avg_rating'] ?? 0, 1) ?>/5
+                    </div>
+                    <div class="rating-stars mb-2">
+                        <?php
+                        $avgRating = $restaurant['avg_rating'] ?? 0;
+                        $fullStars = floor($avgRating);
+                        $halfStar = ($avgRating - $fullStars) >= 0.5;
+                        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                        
+                        for ($i = 0; $i < $fullStars; $i++) {
+                            echo '<i class="fas fa-star"></i>';
+                        }
+                        
+                        if ($halfStar) {
+                            echo '<i class="fas fa-star-half-alt"></i>';
+                        }
+                        
+                        for ($i = 0; $i < $emptyStars; $i++) {
+                            echo '<i class="far fa-star"></i>';
+                        }
+                        ?>
+                    </div>
+                    <p>Basé sur <?= $restaurant['review_count'] ?? 0 ?> avis</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h3>Évaluez ce restaurant</h3>
+                    <p>Partagez votre expérience avec les autres clients</p>
+                    <a href="add-review.php?restaurant_id=<?= $restoId ?>" class="btn btn-primary">
+                        <i class="fas fa-pen me-2"></i>Écrire un avis
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Liste des avis -->
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            La fonctionnalité d'affichage des avis sera implémentée prochainement.
+       </div>
+       </div>
+       </div>
+
+<!-- Modal pour les détails du produit -->
+<!-- Modal pour les détails du produit -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Détails du produit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                    <img id="modalProductImage" src="" alt="" class="img-fluid rounded" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEVDREM0Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmYiPlByb2R1aXQgbm9uIGRpc3BvbmlibGU8L3RleHQ+PC9zdmc+'; this.alt='Image non disponible'; this.classList.add('fallback-img');">
+                    </div>
+                    <div class="col-md-6">
+                        <h3 id="modalProductName"></h3>
+                        
+                        <!-- DESCRIPTION COMPLÈTE ICI -->
+                        <div id="modalProductDescription" class="product-description-full mb-3"></div>
+                        
+                        <h4 id="modalProductPrice" class="text-primary"></h4>
+                        
+                        <!-- Options personnalisables -->
+                        <div class="customization-options mt-4">
+                            <h5>Personnalisation</h5>
+                            <div id="customizationContainer">
+                                <!-- Les options seront ajoutées dynamiquement ici -->
+                            </div>
+                        </div>
+                        
+                        <!-- Quantité -->
+                        <div class="quantity-selector mt-4">
+                            <label for="productQuantity" class="form-label">Quantité:</label>
+                            <div class="input-group" style="width: 150px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                                <input type="number" class="form-control text-center" id="productQuantity" value="1" min="1" max="10">
+                                <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                            </div>
+>>>>>>> Stashed changes
                         </div>
                     </section>
                     <?php endforeach; ?>
